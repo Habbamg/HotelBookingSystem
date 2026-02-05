@@ -56,6 +56,8 @@ namespace HotelBookingAPI.Entities
 
         // Список зручностей у цьому номері
         // Сюди ми додамо: Wi-Fi, Фен, Паркінг, Засоби гігієни
+        public List<Booking> Bookings { get; set; } = new List<Booking>();
+
         public List<Amenity> Amenities { get; set; } = new List<Amenity>();
     }
 }

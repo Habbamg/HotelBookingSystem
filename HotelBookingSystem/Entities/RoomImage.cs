@@ -9,6 +9,7 @@ namespace HotelBookingAPI.Entities
         // Посилання на картинку (напр. "/images/room101.jpg")
         public string Url { get; set; } = string.Empty;
 
+        public string Type { get; set; } = "image";
         // --- ЗВ'ЯЗОК ---
 
         // ID кімнати, до якої належить це фото

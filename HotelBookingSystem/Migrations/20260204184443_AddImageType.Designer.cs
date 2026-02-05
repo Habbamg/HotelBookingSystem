@@ -4,6 +4,7 @@ using HotelBookingAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelBookingSystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260204184443_AddImageType")]
+    partial class AddImageType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -259,7 +262,7 @@ namespace HotelBookingSystem.Migrations
             modelBuilder.Entity("HotelBookingAPI.Entities.Booking", b =>
                 {
                     b.HasOne("HotelBookingAPI.Entities.Room", "Room")
-                        .WithMany("Bookings")
+                        .WithMany()
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -280,8 +283,6 @@ namespace HotelBookingSystem.Migrations
 
             modelBuilder.Entity("HotelBookingAPI.Entities.Room", b =>
                 {
-                    b.Navigation("Bookings");
-
                     b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
