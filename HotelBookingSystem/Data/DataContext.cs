@@ -24,7 +24,7 @@ namespace HotelBookingAPI.Data
             // Налаштовуємо точність для грошей у Кімнатах
             modelBuilder.Entity<Room>()
                 .Property(r => r.BasePrice)
-                .HasColumnType("decimal(18, 0)"); // 18 цифр всього, 2 після коми
+                .HasColumnType("decimal(18, 0)"); 
 
             modelBuilder.Entity<Room>()
                 .Property(r => r.ExtraPersonPrice)
