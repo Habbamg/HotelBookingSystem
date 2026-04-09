@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useState } from 'react';
-import Home from './pages/Home';
+import Home from "./pages/Home/Home";
 import Booking from './pages/Booking';
 import './App.css'; 
 

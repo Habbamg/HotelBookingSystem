@@ -1,0 +1,263 @@
+/* =========================================
+   КНОПКИ ДАТ
+   ========================================= */
+.custom-date-range-trigger { 
+  background: none; 
+  border: none; 
+  padding: 0; 
+  cursor: pointer; 
+  display: flex; 
+  align-items: center; 
+  gap: 1rem; 
+  width: 100%; 
+}
+
+.date-input-pill { 
+  background-color: #ffffff; 
+  border: 1px solid #e0e0e0; 
+  border-radius: 50px; 
+  padding: 10px 20px 10px 16px; 
+  flex: 1; 
+  display: flex; 
+  flex-direction: column; 
+  position: relative; 
+  text-align: left; 
+  transition: all 0.3s ease; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+}
+
+.date-input-pill:hover { 
+  border-color: #cccccc; 
+  box-shadow: 0 6px 15px rgba(0,0,0,0.06); 
+  transform: translateY(-1px); 
+}
+
+.pill-label { 
+  font-size: 0.75rem; 
+  font-weight: 500; 
+  color: #666666; 
+  margin-bottom: 2px; 
+}
+
+.pill-date { 
+  font-size: 1.1rem; 
+  font-weight: 700; 
+  color: #333333; 
+}
+
+.pill-icon { 
+  position: absolute; 
+  top: 50%; 
+  right: 18px; 
+  transform: translateY(-50%); 
+  font-size: 1.1rem; 
+  color: #2c5e3b; 
+  opacity: 0.8; 
+}
+
+.custom-date-range-trigger .selects-start, 
+.custom-date-range-trigger .selects-end { 
+  background-color: #fbfbfb; 
+}
+
+/* ==========================================================================
+   КАЛЕНДАР: БАЗОВИЙ ДИЗАЙН ТА ВИДІЛЕННЯ
+   ========================================================================== */
+.react-datepicker {
+  font-family: inherit !important;
+  border: none !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2) !important; /* Зробив тінь трохи глибшою, щоб він краще виділявся по центру */
+  border-radius: 16px !important;
+  background-color: #ffffff !important;
+}
+
+.react-datepicker-wrapper { position: static; width: 100%; }
+.react-datepicker__header { background-color: transparent !important; border-bottom: none !important; padding-top: 0 !important; }
+.react-datepicker__current-month { display: none !important; }
+
+.calendar-custom-header { 
+  display: flex; justify-content: space-between; align-items: center; 
+  padding: 0.5rem 1rem 1rem 1rem; background: transparent !important; 
+}
+
+.calendar-month-name { 
+  text-transform: capitalize; font-weight: bold; font-size: 1.2rem; 
+  color: #2c5e3b !important; 
+}
+
+.calendar-nav-btn { 
+  background: none; border: none; font-size: 1.4rem; font-weight: bold; 
+  cursor: pointer; color: #2c5e3b; padding: 5px 15px; 
+  border-radius: 50%; transition: background 0.2s; 
+}
+.calendar-nav-btn:hover { background-color: #f9f9f9; }
+
+.react-datepicker__day { outline: none !important; -webkit-tap-highlight-color: transparent !important; }
+
+.react-datepicker__day--keyboard-selected:not(.react-datepicker__day--selected):not(.react-datepicker__day--range-start):not(.react-datepicker__day--range-end):not(.react-datepicker__day--selecting-range-start) { 
+  background-color: transparent !important; color: inherit !important; 
+}
+
+/* ПОВНІСТЮ ХОВАЄМО ПОРОЖНІ ДНІ */
+.react-datepicker__day--outside-month {
+  visibility: hidden !important; 
+}
+
+/* ВИДІЛЕННЯ ДІАПАЗОНУ */
+.react-datepicker__day--in-range, 
+.react-datepicker__day--in-selecting-range { 
+  background-color: rgba(44, 94, 59, 0.15) !important; 
+  color: #333333 !important; 
+  border-radius: 0 !important; 
+}
+
+.react-datepicker__day.react-datepicker__day--selected,
+.react-datepicker__day.react-datepicker__day--range-start,
+.react-datepicker__day.react-datepicker__day--range-end,
+.react-datepicker__day.react-datepicker__day--selecting-range-start { 
+  background-color: #2c5e3b !important; 
+  color: #ffffff !important; 
+  border-radius: 8px !important; 
+}
+
+/* Безшовне з'єднання (хвостики діапазону) */
+.react-datepicker__day--range-start, .react-datepicker__day--range-end { position: relative !important; z-index: 1 !important; }
+.react-datepicker__day--range-start.react-datepicker__day--in-range::before { content: ""; position: absolute; top: 0; bottom: 0; right: 0; width: 50%; background-color: rgba(44, 94, 59, 0.15) !important; z-index: -1 !important; }
+.react-datepicker__day--range-end.react-datepicker__day--in-range::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 50%; background-color: rgba(44, 94, 59, 0.15) !important; z-index: -1 !important; }
+.react-datepicker__day--range-start.react-datepicker__day--range-end::before { display: none !important; }
+
+/* Дизайн самої клітинки дня */
+.custom-calendar-day { display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; padding: 4px 0; width: 100%; height: 100%; }
+.day-number { font-weight: 500; }
+.day-price { font-size: 0.6rem; margin-top: 2px; }
+
+.react-datepicker__day .day-price { color: #888; }
+.react-datepicker__day--in-range .day-price, .react-datepicker__day--in-selecting-range .day-price { color: #555 !important; }
+.react-datepicker__day.react-datepicker__day--selected .day-price, 
+.react-datepicker__day.react-datepicker__day--range-start .day-price,
+.react-datepicker__day.react-datepicker__day--range-end .day-price,
+.react-datepicker__day.react-datepicker__day--selecting-range-start .day-price { color: rgba(255, 255, 255, 0.9) !important; }
+
+/* ==========================================================================
+   ПІДВАЛ КАЛЕНДАРЯ
+   ========================================================================== */
+.calendar-footer-content { display: flex; gap: 1rem; width: 100%; justify-content: space-between; align-items: center; }
+.calendar-date-summary-info { display: flex; align-items: center; color: #333; flex: 1; }
+.summary-dates { display: flex; flex-direction: column; font-size: 0.95rem; line-height: 1.4; text-align: left; }
+.nights-count { font-weight: 600; color: #2c5e3b; }
+.calendar-date-summary-panel-placeholder { text-align: left; font-size: 0.95rem; color: #888; flex: 1; }
+.calendar-done-btn { background-color: #2c5e3b; color: white; border: none; height: 48px; margin: 0; font-size: 1.1rem; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 2rem; cursor: pointer; }
+
+/* ==========================================================================
+   ПК ВЕРСІЯ (МІСЯЦІ ПОРУЧ ТА ІДЕАЛЬНЕ ЦЕНТРУВАННЯ ВІДНОСНО ВІКНА)
+   ========================================================================== */
+@media (min-width: 769px) {
+  
+  /* СУПЕР-ФІКС: Прибиваємо календар рівно по центру ВІКНА БРАУЗЕРА */
+  .react-datepicker-popper[data-placement] { 
+    position: fixed !important;  /* Замість absolute! Тепер він не залежить від панелі пошуку */
+    top: 50% !important;         /* Рівно половина екрана зверху */
+    left: 50% !important;        /* Рівно половина екрана зліва */
+    right: auto !important;      
+    transform: translate(-50%, -50%) !important; /* Зсув на центр самого календаря */
+    display: flex !important;
+    justify-content: center !important; 
+    z-index: 10000 !important;   /* Поверх усього */
+  }
+
+  .react-datepicker__triangle { display: none !important; }
+  
+  .react-datepicker { 
+    padding: 1.5rem !important; 
+    display: flex !important; 
+    flex-direction: row !important; /* Місяці стають горизонтально */
+    flex-wrap: wrap !important;     /* Дозволяє підвалу впасти під місяці */
+    justify-content: center !important;
+    width: 760px !important;        
+  }
+
+  .react-datepicker__month-container { 
+    width: 320px !important;
+    margin: 0 1rem !important;
+    float: none !important; 
+  }
+
+  .react-datepicker__week, .react-datepicker__day-names {
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  /* Підвал падає під місяці */
+  .react-datepicker__children-container {
+    width: 100% !important; 
+    margin-top: 1rem !important;
+    padding-top: 1rem !important;
+    border-top: 1px solid #e0e0e0 !important;
+    display: flex !important;
+  }
+  
+  .calendar-footer-content { justify-content: flex-start; }
+  .summary-dates { flex-direction: row; gap: 8px; font-size: 1rem; }
+
+  .react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name {
+    width: 3.2rem !important; height: 3.2rem !important; line-height: 1 !important; margin: 0.2rem !important; display: inline-flex !important; align-items: center; justify-content: center;
+  }
+
+  .day-number { font-size: 1.05rem; }
+  .react-datepicker__day-name { font-weight: 700; color: #666; text-transform: uppercase; font-size: 0.85rem !important; margin-bottom: 5px !important; }
+  
+  .react-datepicker__day:hover:not(.react-datepicker__day--selected):not(.react-datepicker__day--range-start):not(.react-datepicker__day--range-end):not(.react-datepicker__day--in-range):not(.react-datepicker__day--selecting-range-start) {
+    background-color: #f0f0f0 !important;
+  }
+}
+
+/* ==========================================================================
+   МОБІЛЬНА ВЕРСІЯ (СТАБІЛЬНИЙ ЛИПКИЙ НИЗ - НЕДОТОРКАНА)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .custom-date-range-trigger { flex-direction: row; gap: 0.5rem; }
+  .date-input-pill { padding: 8px 12px; }
+  .pill-date { font-size: 0.95rem; }
+  .pill-icon { right: 10px; font-size: 0.9rem; }
+
+  .react-datepicker__portal { 
+    background-color: rgba(0, 0, 0, 0.7) !important; z-index: 9999 !important; display: flex !important; align-items: center !important; justify-content: center !important; 
+  }
+
+  .mobile-modal-inner { 
+    background: #ffffff; border-radius: 16px; width: 95vw; max-width: 420px; height: 85vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.2); position: relative; 
+  }
+
+  .mobile-modal-header { display: flex; justify-content: center; align-items: center; padding: 1.2rem 1rem; border-bottom: 1px solid #e0e0e0; position: relative; flex-shrink: 0; }
+  .mobile-modal-title { font-size: 1.2rem; font-weight: 700; color: #333; }
+  .mobile-modal-close { position: absolute; right: 1rem; background: none; border: none; font-size: 1.6rem; color: #888; cursor: pointer; padding: 0; }
+
+  .calendar-custom-header { justify-content: center !important; }
+
+  .mobile-fixed-weekdays { display: flex !important; justify-content: space-between !important; width: 100% !important; padding: 0.8rem 1rem !important; box-sizing: border-box !important; border-bottom: 1px solid #f0f0f0 !important; flex-shrink: 0 !important; }
+  .mobile-fixed-weekdays div { width: 14.28% !important; text-align: center !important; font-size: 0.85rem !important; font-weight: 600 !important; color: #666 !important; }
+  .mobile-fixed-weekdays .weekend { color: #e74c3c !important; }
+
+  .mobile-modal-body { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; position: relative; width: 100%; }
+  .mobile-modal-body::-webkit-scrollbar { width: 4px; }
+  .mobile-modal-body::-webkit-scrollbar-thumb { background-color: #2c5e3b; border-radius: 10px; }
+
+  .react-datepicker { background: transparent !important; border: none !important; padding: 0 !important; width: 100% !important; display: flex !important; flex-direction: column !important; }
+  .react-datepicker__day-names { display: none !important; }
+  .react-datepicker__months-container { display: flex !important; flex-direction: column !important; align-items: stretch !important; width: 100% !important; }
+  .react-datepicker__month { width: 100% !important; margin: 0 !important; padding: 0 1rem 0.5rem 1rem !important; box-sizing: border-box !important; }
+  .react-datepicker__week { display: flex !important; justify-content: space-between !important; width: 100% !important; }
+  
+  .react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name { 
+    width: 14.28% !important; height: 3.2rem !important; margin: 0.1rem 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; 
+  }
+  .day-number { font-size: 1.15rem; }
+
+  .react-datepicker__children-container {
+    position: sticky !important; bottom: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important; background: #ffffff !important; z-index: 200 !important; border-top: 1px solid #e0e0e0 !important; padding: 1rem 1.2rem !important; box-shadow: 0 -5px 15px rgba(0,0,0,0.05) !important; box-sizing: border-box !important;
+  }
+  .calendar-footer-content { flex-direction: column; align-items: stretch; gap: 12px; }
+  .calendar-date-summary-info { justify-content: space-between; }
+  .summary-dates { font-size: 0.9rem; }
+  .calendar-done-btn { width: 100%; }
+}
