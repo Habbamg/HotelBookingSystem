@@ -78,7 +78,8 @@ namespace HotelBookingAPI.Controllers
 
         // 3. 👮‍♂️ СКАСУВАННЯ (Тільки Адмін)
         // Ми залишили пошук за кодом, бо це зручно, але додали ЗАМОК
-        [Authorize(Roles = "Admin")] // 👈 Головна зміна!
+
+        //[Authorize(Roles = "Admin")] // потрібно буде розкоментувати щоб ролі працювали
         [HttpPost("cancel")]
         public async Task<ActionResult> CancelBooking(string bookingCode)
         {

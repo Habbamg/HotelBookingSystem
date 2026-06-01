@@ -1,14 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BookingDatePicker from '../../components/BookingDatePicker/BookingDatePicker';
+import GuestSelector from '../../components/GuestSelector/GuestSelector'; // <--- Імпортуємо новий компонент
 import './Home.css';
+import { format } from 'date-fns';
 
 function Home() {
   const navigate = useNavigate();
   
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
-  const [guests, setGuests] = useState('1 гість');
+  
+  // Змінюємо простий рядок на об'єкт (це набагато професійніше для Бази Даних)
+  const [guestConfig, setGuestConfig] = useState({
+    adults: 2,
+    children: 0,
+    rooms: 1
+  });
 
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
@@ -18,13 +26,18 @@ function Home() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleSearch = (e) => {
+const handleSearch = (e) => {
     e.preventDefault();
     if (!startDate || !endDate) {
       alert("Будь ласка, оберіть повний період проживання (заїзд та виїзд).");
       return;
     }
-    navigate(`/booking?start=${startDate.toISOString()}&end=${endDate.toISOString()}&guests=${guests}`);
+    
+    // ФІКС: Передаємо чисту дату без часових поясів (наприклад, 2026-05-15)
+    const startStr = format(startDate, 'yyyy-MM-dd');
+    const endStr = format(endDate, 'yyyy-MM-dd');
+    
+    navigate(`/booking?start=${startStr}&end=${endStr}&adults=${guestConfig.adults}&children=${guestConfig.children}`);
   };
 
   return (
@@ -40,7 +53,6 @@ function Home() {
         <form className="search-widget" onSubmit={handleSearch}>
           
           <div className="widget-group date-widget-group" style={{ flex: 3 }}>
-            {/* ТУТ ПРАЦЮЄ НАШ ВИДІЛЕНИЙ КОМПОНЕНТ КАЛЕНДАРЯ */}
             <BookingDatePicker 
               dateRange={dateRange} 
               setDateRange={setDateRange} 
@@ -48,14 +60,12 @@ function Home() {
             />
           </div>
 
-          <div className="widget-group guests-widget-group">
-            <label>Гості</label>
-            <select className="custom-date-input" value={guests} onChange={(e) => setGuests(e.target.value)}>
-              <option value="1">1 гість</option>
-              <option value="2">2 гості</option>
-              <option value="3">3 гості</option>
-              <option value="4+">4+ гостей</option>
-            </select>
+          <div className="widget-group guests-widget-group" style={{ flex: 2 }}>
+             {/* ВСТАВЛЯЄМО НАШ НОВИЙ КОМПОНЕНТ (прибрали старий label та select) */}
+             <GuestSelector 
+               guestConfig={guestConfig} 
+               setGuestConfig={setGuestConfig} 
+             />
           </div>
 
           <button type="submit" className="btn-primary search-btn">

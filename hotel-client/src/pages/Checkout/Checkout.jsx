@@ -1,0 +1,284 @@
+import { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { format, parseISO, differenceInDays } from 'date-fns';
+import { uk } from 'date-fns/locale/uk';
+import { FiUsers, FiCheck, FiCalendar, FiShield } from 'react-icons/fi';
+
+import RoomDetailsModal from '../../components/RoomDetailsModal/RoomDetailsModal';
+import './Checkout.css';
+
+function Checkout() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const roomId = searchParams.get('roomId');
+  const startStr = searchParams.get('start');
+  const endStr = searchParams.get('end');
+  const adults = searchParams.get('adults') || 1;
+  const children = searchParams.get('children') || 0;
+
+  const [room, setRoom] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  const [formData, setFormData] = useState({
+    guestName: '',
+    guestPhone: '',
+    guestEmail: '',
+    comments: ''
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+
+  const nights = (startStr && endStr) ? differenceInDays(parseISO(endStr), parseISO(startStr)) : 1;
+  const formattedStart = startStr ? format(parseISO(startStr), 'dd MMMM', { locale: uk }) : '';
+  const formattedEnd = endStr ? format(parseISO(endStr), 'dd MMMM', { locale: uk }) : '';
+  const totalGuests = parseInt(adults) + parseInt(children);
+
+  useEffect(() => {
+    if (!roomId) {
+      navigate('/');
+      return;
+    }
+
+    const fetchRoomDetails = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/Room/${roomId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setRoom(data);
+        }
+      } catch (error) {
+        console.error("Помилка завантаження:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRoomDetails();
+  }, [roomId, navigate]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    const bookingPayload = {
+      roomId: parseInt(roomId),
+      guestName: formData.guestName,
+      guestPhone: formData.guestPhone,
+      guestEmail: formData.guestEmail,
+      comments: formData.comments,
+      checkInDate: parseISO(startStr).toISOString(),
+      checkOutDate: parseISO(endStr).toISOString(),
+      adults: parseInt(adults),
+      children: parseInt(children)
+    };
+
+    try {
+      const response = await fetch('http://localhost:5000/api/Booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingPayload)
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setTimeout(() => navigate('/'), 4000);
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (loading) return <div className="checkout-loading">Завантаження деталей...</div>;
+  if (!room) return <div className="checkout-loading">Помилка: Номер не знайдено.</div>;
+
+  const images = room.images && room.images.length > 0 
+    ? room.images.map(img => img.url)
+    : [
+        "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80"
+      ];
+  const displayImages = images.slice(0, 5);
+
+  if (submitStatus === 'success') {
+    return (
+      <div className="checkout-success-page">
+        <div className="success-card">
+          <div className="success-icon-circle"><FiCheck /></div>
+          <h2>Бронювання підтверджено!</h2>
+          <p>Дякуємо, <strong>{formData.guestName}</strong>. Ваша заявка успішно оформлена.</p>
+          <p className="success-subtext">Ми зв'яжемося з вами найближчим часом для уточнення деталей.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="checkout-pro-page">
+      <div className="checkout-pro-container">
+        
+        <div className="checkout-header">
+          <button className="btn-pro-back" onClick={() => navigate(-1)}>
+            &larr; Повернутися назад
+          </button>
+          <h1 className="checkout-main-title">Підтвердження бронювання</h1>
+        </div>
+
+        <div className="checkout-grid">
+          
+          {/* ЛІВА КОЛОНКА */}
+          <div className="checkout-left">
+            <div className="pro-card">
+              <h3 className="pro-card-title">Ваші контактні дані</h3>
+              <p className="pro-card-subtitle">Заповніть форму, щоб ми могли зв'язатися з вами.</p>
+              
+              <form id="booking-form" onSubmit={handleSubmit} className="pro-form">
+                <div className="pro-input-group">
+                  <label>Ім'я та Прізвище *</label>
+                  <input type="text" name="guestName" value={formData.guestName} onChange={handleChange} required placeholder="Введіть ваше ім'я" />
+                </div>
+
+                <div className="pro-form-row">
+                  <div className="pro-input-group">
+                    <label>Номер телефону *</label>
+                    <input type="tel" name="guestPhone" value={formData.guestPhone} onChange={handleChange} required placeholder="+38 (000) 000-00-00" />
+                  </div>
+                  <div className="pro-input-group">
+                    <label>Email *</label>
+                    <input type="email" name="guestEmail" value={formData.guestEmail} onChange={handleChange} required placeholder="Ваш email для квитанції" />
+                  </div>
+                </div>
+
+                <div className="pro-input-group">
+                  <label>Особливі побажання (необов'язково)</label>
+                  <textarea name="comments" value={formData.comments} onChange={handleChange} placeholder="Наприклад: ранній заїзд, дитяче ліжечко..." rows="3"></textarea>
+                </div>
+              </form>
+
+              {submitStatus === 'error' && <div className="pro-error">Виникла помилка під час відправки. Спробуйте ще раз.</div>}
+            </div>
+
+            <div className="pro-trust-badges">
+              <div className="trust-badge">
+                <FiShield className="trust-icon" />
+                <div>
+                  <h4>Оплата при заселенні</h4>
+                  <p>Вам не потрібно платити зараз. Розрахунок відбувається на рецепції.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ПРАВА КОЛОНКА: Деталі замовлення */}
+          <div className="checkout-right">
+            
+            {/* 1. РОБИМО ВСЮ КАРТКУ КЛІКАБЕЛЬНОЮ */}
+            <div 
+              className="pro-summary-card"
+              style={{ cursor: 'pointer' }}
+              onClick={() => setIsModalOpen(true)}
+              title="Натисніть для перегляду деталей"
+            >
+              
+              <div 
+                className="pro-summary-image" 
+                style={{ backgroundImage: `url(${displayImages[currentImageIndex]})` }}
+              >
+                <div className="hover-zones">
+                  {displayImages.map((_, idx) => (
+                    <div 
+                      key={idx} 
+                      className="hover-zone"
+                      onMouseEnter={() => setCurrentImageIndex(idx)}
+                    />
+                  ))}
+                </div>
+
+                {displayImages.length > 1 && (
+                  <div className="slider-dots">
+                    {displayImages.map((_, idx) => (
+                      <div key={idx} className={`dot ${idx === currentImageIndex ? 'active' : ''}`} />
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <div className="pro-summary-content">
+                <div className="pro-room-name" style={{ transition: 'color 0.2s' }}>
+                  {room.name} <span style={{fontSize: '0.8rem', color: '#888', fontWeight: 'normal'}}>(Деталі ℹ️)</span>
+                </div>
+                
+                <div className="pro-summary-details">
+                  <div className="detail-row">
+                    <FiCalendar className="detail-icon" />
+                    <div className="detail-text">
+                      <strong>Дати:</strong> {formattedStart} — {formattedEnd} <span className="light-text">({nights} ночі)</span>
+                    </div>
+                  </div>
+                  <div className="detail-row">
+                    <FiUsers className="detail-icon" />
+                    <div className="detail-text">
+                      <strong>Гості:</strong> {totalGuests} осіб
+                    </div>
+                  </div>
+                </div>
+
+                <hr className="pro-divider" />
+
+                <div className="pro-price-breakdown">
+                  <div className="price-row">
+                    <span>Ціна за 1 ніч</span>
+                    <span>{room.basePrice} ₴</span>
+                  </div>
+                </div>
+
+                <hr className="pro-divider-thick" />
+
+                <div className="pro-total">
+                  <span>До сплати</span>
+                  <span className="total-amount">{room.basePrice * nights} ₴</span>
+                </div>
+
+                {/* 2. ЗУПИНЯЄМО КЛІК НА КНОПЦІ, ЩОБ ВОНА ВІДПРАВЛЯЛА ФОРМУ, А НЕ ВІДКРИВАЛА МОДАЛКУ */}
+                <button 
+                  form="booking-form" 
+                  type="submit" 
+                  className="pro-submit-btn" 
+                  disabled={isSubmitting}
+                  onClick={(e) => e.stopPropagation()} 
+                >
+                  {isSubmitting ? 'Обробка...' : 'ПІДТВЕРДИТИ БРОНЮВАННЯ'}
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      
+      <RoomDetailsModal 
+        room={room} 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onBook={() => setIsModalOpen(false)} 
+      />
+
+    </div>
+  );
+}
+
+export default Checkout;

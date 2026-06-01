@@ -1,0 +1,574 @@
+.calendar-tab-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  padding: 20px;
+}
+
+.calendar-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.extranet-select {
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  min-width: 250px;
+}
+
+.admin-date-range {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 4px 12px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+  gap: 8px;
+}
+
+.date-nav-btn {
+  background: none;
+  border: none;
+  color: #0071c2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.date-nav-btn:hover { background: #f0f7fa; }
+
+.date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-input-group label {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.extranet-date-input {
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+  padding: 4px;
+  font-family: inherit;
+}
+
+.extranet-date-input:focus { outline: none; }
+.extranet-date-input::-webkit-clear-button { display: none; -webkit-appearance: none; }
+.extranet-date-input:disabled { color: #999; }
+.date-separator { margin: 0 4px; color: #ccc; font-weight: bold; }
+
+/* =========================================
+   ТАБЛИЦЯ ТА ЇЇ ПРОКРУТКА
+========================================== */
+.extranet-grid-wrapper {
+  max-height: 75vh; /* Обов'язкова висота для роботи вертикального скролу */
+  overflow-y: auto; 
+  overflow-x: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.extranet-table {
+  width: max-content !important; 
+  border-collapse: separate; /* Змінено з collapse, щоб sticky працював ідеально */
+  border-spacing: 0;
+  display: table !important;
+}
+
+.extranet-table thead { display: table-header-group !important; }
+.extranet-table tbody { display: table-row-group !important; }
+.extranet-table tr { display: table-row !important; }
+.extranet-table th, .extranet-table td { display: table-cell !important; }
+
+.extranet-table th, 
+.extranet-table td {
+  border-bottom: 1px solid #e0e0e0;
+  border-right: 1px solid #e0e0e0;
+  text-align: center;
+  vertical-align: middle;
+  width: 70px; 
+  min-width: 70px;
+  max-width: 70px;
+  background-color: #ffffff; /* Базовий фон для всіх клітинок */
+}
+
+/* =========================================
+   ІЄРАРХІЯ ЛИПКИХ ЕЛЕМЕНТІВ (МАГНІТ)
+========================================== */
+
+/* 1. Верхня шапка з датами (гортання вниз) */
+.extranet-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* Вище звичайних клітинок і лівої колонки */
+  background-color: #f7f7f7;
+  padding: 10px 0;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* 2. Ліва колонка з назвами номерів (гортання вправо) */
+.sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 5; /* Вище звичайних клітинок, але під шапкою */
+  background-color: #ffffff;
+  width: 250px !important;
+  min-width: 250px !important;
+  max-width: 250px !important;
+  text-align: left !important;
+  padding: 10px 15px;
+  border-left: 1px solid #e0e0e0;
+  border-right: 2px solid #ccc !important;
+}
+
+/* 3. Ліва верхня (кутова) клітинка (гортання в будь-який бік) */
+.extranet-table thead th.room-header-cell,
+.extranet-table thead th.sticky-col {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 20 !important; /* Найвищий пріоритет, накриває все */
+  background-color: #f7f7f7;
+}
+
+/* =========================================
+   ВНУТРІШНІ ЕЛЕМЕНТИ ТАБЛИЦІ
+========================================== */
+.date-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.day-name { font-size: 0.8rem; color: #666; text-transform: uppercase; }
+.day-number { font-size: 1.1rem; font-weight: bold; color: #333; }
+.date-cell.today { color: #0071c2; }
+.date-cell.today .day-number { color: #0071c2; }
+
+/* Назва номера та кнопка */
+.room-title-cell {
+  background-color: #f7f7f7;
+  border-top: 3px solid #e0e0e0 !important;
+}
+
+.room-title-bg {
+  background-color: #f7f7f7 !important;
+  border-top: 3px solid #e0e0e0 !important;
+  border-left: none !important; 
+}
+
+.room-title-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px; 
+}
+
+.room-name-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.room-id { color: #888; font-size: 0.85rem; font-weight: normal; }
+
+.btn-edit-bulk {
+  background-color: #0071c2;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%; 
+  gap: 6px;
+  transition: 0.2s;
+}
+
+.btn-edit-bulk:hover { background-color: #005a9e; }
+
+/* Рядок статусу (Відкрито/Закрито) */
+.row-label { font-size: 0.85rem; color: #555; font-weight: 500; }
+
+.status-cell { 
+  padding: 4px !important; 
+  height: 35px; 
+}
+
+.status-bar {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem; 
+  font-weight: 700;
+  border-radius: 12px; 
+  text-transform: uppercase; 
+  letter-spacing: 0.5px;
+}
+
+.status-bar.open { 
+  background-color: #e8f5e9; 
+  color: #2e7d32; 
+  border: 1px solid #a5d6a7; 
+}
+
+.status-bar.closed { 
+  background-color: #ffebee; 
+  color: #c62828; 
+  border: 1px solid #ef9a9a; 
+}
+
+/* Клітинки з даними */
+.data-cell {
+  font-size: 0.95rem;
+  color: #333;
+  height: 40px;
+}
+
+.data-cell.disabled-cell {
+  background-color: #f9ecec;
+  color: transparent;
+}
+
+.price-data {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+.price-data .currency { font-size: 0.7rem; color: #888; }
+.price-data .amount { font-weight: 600; }
+
+.price-label-content {
+  display: flex;
+  flex-direction: column;
+}
+.price-label-content span { color: #0071c2; cursor: pointer; }
+.price-label-content small { color: #888; text-decoration: underline; cursor: pointer; }
+
+/* Розділювач */
+.spacer-row td { height: 20px; border: none !important; background-color: #fff; }
+
+/* СТИЛІ ДЛЯ СТАНДАРТНОГО ТАРИФУ ТА ЗНИЖОК */
+.rate-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #0071c2;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sub-price-row td {
+  background-color: #f7f7f7 !important; 
+  height: 35px;
+}
+
+.sub-label {
+  padding-left: 20px !important;
+  font-weight: normal;
+  color: #555;
+  border-top: none !important;
+}
+
+.guest-count-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sub-price-data {
+  color: #555;
+  font-size: 0.95rem;
+  border-top: none !important;
+}
+
+/* СТИЛІ ДЛЯ ОБМЕЖЕНЬ (МІН ДНІ) */
+.restriction-row td {
+  height: 35px;
+  background-color: #ffffff;
+}
+
+.restriction-label {
+  color: #555;
+  font-weight: normal;
+}
+
+/* =========================================
+   БОКОВА ПАНЕЛЬ РЕДАГУВАННЯ (OFFCANVAS)
+========================================== */
+.bulk-edit-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.bulk-edit-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 450px;
+  height: 100vh;
+  background: #f7f7f7;
+  z-index: 1001;
+  box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.3s ease-in-out;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+.bulk-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+}
+/* =========================================
+   ВІДНОВЛЕНІ СТИЛІ ДЛЯ МОДАЛКИ ТА КНОПОК
+========================================== */
+
+/* Фон самої панелі, щоб білі картки гарно виділялися */
+.bulk-panel-body {
+  padding: 20px;
+  flex-grow: 1;
+  overflow-y: auto;
+  background-color: #f7f7f7; 
+}
+
+/* Картки (білі блоки з рамкою) */
+.bulk-accordion-card {
+  background-color: #ffffff;
+  border: 1px solid #d4d4d4;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Легка тінь для об'єму */
+}
+
+.card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: #ffffff;
+}
+
+/* Відновлюємо красиву синю кнопку Зберегти */
+.btn-save-bulk {
+  background-color: #0071c2 !important;
+  color: white !important;
+  border: none !important;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-save-bulk:hover {
+  background-color: #005a9e !important;
+}
+
+/* Кнопка закриття (хрестик) */
+.close-panel-btn { 
+  background: none; 
+  border: none; 
+  font-size: 1.5rem; 
+  color: #666; 
+  cursor: pointer; 
+}
+/* =========================================
+   БОКОВА ПАНЕЛЬ РЕДАГУВАННЯ (OFFCANVAS)
+========================================== */
+.bulk-edit-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.bulk-edit-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 450px;
+  height: 100vh;
+  background: #f7f7f7;
+  z-index: 1001;
+  box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.3s ease-in-out;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+/* Шапка панелі */
+.bulk-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.bulk-panel-header h3 { margin: 0; font-size: 1.2rem; color: #333; font-weight: 600; }
+.close-panel-btn { background: none; border: none; font-size: 1.5rem; color: #666; cursor: pointer; }
+
+/* Тіло панелі (скролиться) */
+.bulk-panel-body {
+  padding: 20px;
+  flex-grow: 1;
+  overflow-y: auto;
+  background-color: #f7f7f7;
+}
+
+/* Поля дат */
+.bulk-dates-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.bulk-input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.bulk-input-group label { font-size: 0.9rem; font-weight: 600; color: #333; }
+.bulk-input-group input { 
+  padding: 10px; 
+  border: 1px solid #ccc; 
+  border-radius: 4px; 
+  font-size: 1rem; 
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Синій бейджик */
+.bulk-info-badge {
+  background: #e8f4fd;
+  color: #0071c2;
+  padding: 12px 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  border: 1px solid #cde6f7;
+}
+
+/* Картки-акордеони */
+.bulk-accordion-card {
+  background: #ffffff;
+  border: 1px solid #d4d4d4;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.card-header {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer; 
+  user-select: none; 
+}
+
+.card-header:hover { background: #f9f9f9; }
+.card-header h4 { margin: 0; font-size: 1.05rem; color: #333; font-weight: 600; }
+
+.card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #ffffff;
+}
+
+.card-body label { font-size: 0.9rem; color: #555; }
+.card-body input, .card-body select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%; /* Розтягуємо інпути на всю ширину картки */
+  box-sizing: border-box; /* Щоб padding не виштовхував інпут за краї */
+}
+
+/* Футер з кнопкою збереження */
+.bulk-panel-footer {
+  padding: 20px;
+  background: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn-save-bulk {
+  width: 100%; /* Кнопка на всю ширину */
+  background-color: #0071c2 !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: center;
+}
+
+.btn-save-bulk:hover { background-color: #005a9e !important; }

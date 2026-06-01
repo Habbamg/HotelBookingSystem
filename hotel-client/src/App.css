@@ -201,3 +201,53 @@ html {
 .footer p {
   margin-bottom: 0.5rem;
 }
+
+/* =========================================
+   КНОПКА ПЕРСОНАЛУ У МЕНЮ
+   ========================================= */
+.nav-staff-link {
+  font-size: 0.85rem !important; /* Робимо меншою за інші пункти */
+  color: #a0a0a0 !important; /* Тьмяно-сірий колір */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 2rem; /* Відступ від "Контакти" на ПК */
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.nav-staff-link:hover {
+  opacity: 1;
+  color: #2c5e3b !important; /* Твій фірмовий зелений */
+}
+
+/* Стилі для логотипу на головній сторінці */
+.public-navbar-logo {
+  height: 85px; /* Збільшили з 55px до 85px для комп'ютера */
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover .public-navbar-logo {
+  transform: scale(1.05);
+}
+
+/* Для телефонів робимо логотип теж помітно більшим */
+@media (max-width: 768px) {
+  .public-navbar-logo {
+    height: 65px; /* Збільшили з 45px до 65px для мобільних */
+  }
+}
+
+/* Налаштування для мобільного (бургер-меню) */
+@media (max-width: 768px) {
+  .nav-staff-link {
+    margin-left: 0;
+    margin-top: 2rem; /* Опускаємо її в самий низ мобільного меню */
+    justify-content: center;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+    width: 100%;
+  }
+}

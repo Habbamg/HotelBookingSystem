@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema; // Потрібно для [NotMapped]
 
+
 namespace HotelBookingAPI.Entities
 {
     public class Room
@@ -41,6 +42,12 @@ namespace HotelBookingAPI.Entities
         // Це число використовується для фільтру пошуку
         public int MaxCapacity { get; set; }
 
+        // Площа номера в квадратних метрах
+        public int Area { get; set; }
+
+        // Кількість кімнат у номері (наприклад, 1 для стандарту, 2 для люксу)
+        public int RoomsCount { get; set; } = 1;
+
         // Це "віртуальне" поле. Його немає в базі даних ([NotMapped]).
         // Воно автоматично склеює цифри в гарний текст для сайту.
         // Результат: "2 особи" або "2-4 особи"
@@ -50,6 +57,8 @@ namespace HotelBookingAPI.Entities
             : $"{BaseCapacity}-{MaxCapacity} особи";
 
         // --- 🔗 ЗВ'ЯЗКИ З ІНШИМИ ТАБЛИЦЯМИ ---
+        // Зв'язок із календарем (щоб знати, які дати закриті)
+        public List<HotelBookingSystem.Entities.RoomAvailability> Availabilities { get; set; } = new List<HotelBookingSystem.Entities.RoomAvailability>();
 
         // Список фотографій цього номера (Слайдер)
         public List<RoomImage> Images { get; set; } = new List<RoomImage>();
@@ -60,4 +69,5 @@ namespace HotelBookingAPI.Entities
 
         public List<Amenity> Amenities { get; set; } = new List<Amenity>();
     }
+
 }

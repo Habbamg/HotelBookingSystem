@@ -4,6 +4,7 @@ using HotelBookingAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelBookingSystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260528184517_AddRoomAvailabilityTable")]
+    partial class AddRoomAvailabilityTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,22 +120,6 @@ namespace HotelBookingSystem.Migrations
                     b.ToTable("Bookings");
                 });
 
-            modelBuilder.Entity("HotelBookingAPI.Entities.HotelSetting", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("MaxBookingDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("HotelSettings");
-                });
-
             modelBuilder.Entity("HotelBookingAPI.Entities.Review", b =>
                 {
                     b.Property<int>("Id")
@@ -216,9 +203,6 @@ namespace HotelBookingSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsMain")
-                        .HasColumnType("bit");
-
                     b.Property<int>("RoomId")
                         .HasColumnType("int");
 
@@ -297,31 +281,6 @@ namespace HotelBookingSystem.Migrations
                     b.ToTable("RoomAvailabilities");
                 });
 
-            modelBuilder.Entity("HotelBookingSystem.Entities.RoomOccupancyRule", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("DiscountAmount")
-                        .HasColumnType("decimal(18, 0)");
-
-                    b.Property<int>("GuestCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoomId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoomId", "GuestCount")
-                        .IsUnique();
-
-                    b.ToTable("RoomOccupancyRules");
-                });
-
             modelBuilder.Entity("AmenityRoom", b =>
                 {
                     b.HasOne("HotelBookingAPI.Entities.Amenity", null)
@@ -360,17 +319,6 @@ namespace HotelBookingSystem.Migrations
                 });
 
             modelBuilder.Entity("HotelBookingSystem.Entities.RoomAvailability", b =>
-                {
-                    b.HasOne("HotelBookingAPI.Entities.Room", "Room")
-                        .WithMany()
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Room");
-                });
-
-            modelBuilder.Entity("HotelBookingSystem.Entities.RoomOccupancyRule", b =>
                 {
                     b.HasOne("HotelBookingAPI.Entities.Room", "Room")
                         .WithMany()

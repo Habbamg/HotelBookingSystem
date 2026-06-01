@@ -45,15 +45,16 @@ namespace HotelBookingAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(string username, string password)
+        public async Task<ActionResult<string>> Login([FromBody] LoginRequest request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            // Звертаємося до request.Username
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
 
             if (user == null) return BadRequest("Користувача не знайдено.");
 
-            if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash)) return BadRequest("Невірний пароль.");
+            // Звертаємося до request.Password
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash)) return BadRequest("Невірний пароль.");
 
-            // 🔥 ЯКЩО ПАРОЛЬ ВІРНИЙ — ВИДАЄМО ТОКЕН
             string token = CreateToken(user);
             return Ok(token);
         }
@@ -88,4 +89,9 @@ namespace HotelBookingAPI.Controllers
             return jwt;
         }
     }
+}
+public class LoginRequest
+{
+    public string Username { get; set; }
+    public string Password { get; set; }
 }

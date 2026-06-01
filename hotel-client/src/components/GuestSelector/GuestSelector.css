@@ -1,0 +1,175 @@
+.guest-selector-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Кнопка-тригер (виглядає як інпут) */
+.guest-trigger {
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 50px; /* Овальна форма, як у дат */
+  padding: 10px 20px 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  height: 100%;
+  min-height: 62px;
+}
+
+.guest-trigger:hover, .guest-trigger.active {
+  border-color: #2c5e3b;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+}
+
+.guest-trigger-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.guest-trigger-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #666666;
+  margin-bottom: 2px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.guest-trigger-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333333;
+}
+
+.guest-trigger-icon {
+  font-size: 1.2rem;
+  color: #2c5e3b;
+  opacity: 0.8;
+}
+
+/* Випадаюче меню */
+.guest-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 320px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  padding: 1.5rem;
+  z-index: 1000;
+  border: 1px solid #f0f0f0;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Рядок з лічильником */
+.guest-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.guest-row:first-child {
+  padding-top: 0;
+}
+
+.guest-row-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.guest-row-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333333;
+}
+
+.guest-row-subtitle {
+  font-size: 0.8rem;
+  color: #888888;
+  margin-top: 2px;
+}
+
+/* Блок з кнопками + та - */
+.guest-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.counter-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #2c5e3b;
+  background: transparent;
+  color: #2c5e3b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+}
+
+.counter-btn:hover:not(:disabled) {
+  background: rgba(44, 94, 59, 0.1);
+}
+
+.counter-btn:active:not(:disabled) {
+  transform: scale(0.9);
+}
+
+.counter-btn:disabled {
+  border-color: #cccccc;
+  color: #cccccc;
+  cursor: not-allowed;
+}
+
+.counter-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  width: 20px;
+  text-align: center;
+}
+
+/* Кнопка "Готово" */
+.guest-done-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 12px;
+  background-color: #2c5e3b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.guest-done-btn:hover {
+  background-color: #1e4229;
+}
+
+/* Мобільна адаптація */
+@media (max-width: 768px) {
+  .guest-dropdown {
+    width: 100%; /* На мобільному займає всю ширину */
+    left: 0;
+    right: 0;
+  }
+}

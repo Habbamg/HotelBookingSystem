@@ -1,9 +1,13 @@
-import React, { forwardRef, useRef } from 'react';
+import React, { forwardRef, useRef, useState, useEffect } from 'react';
 import DatePicker, { registerLocale, CalendarContainer } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { uk } from 'date-fns/locale/uk';
 import { format, differenceInDays } from 'date-fns';
-import './BookingDatePicker.css'; // Підключаємо ізольовані стилі календаря
+
+// 1. ІМПОРТУЄМО ПРОФЕСІЙНІ SVG-ІКОНКИ (Feather Icons)
+import { FiCalendar, FiChevronLeft, FiChevronRight } from 'react-icons/fi'; 
+
+import './BookingDatePicker.css';
 
 registerLocale('uk', uk);
 
@@ -49,13 +53,17 @@ const CustomDateButton = forwardRef(({ onClick, startDate, endDate }, ref) => {
       <div className="date-input-pill selects-start">
         <span className="pill-label">Дата заїзду</span>
         <span className="pill-date">{formatDisplayDate(startDate, 'Оберіть')}</span>
-        <span className="pill-icon">📅</span> 
+        
+        {/* 2. ЗАМІНИЛИ ЕМОДЗІ НА SVG-КОМПОНЕНТ */}
+        <span className="pill-icon"><FiCalendar /></span> 
       </div>
       
       <div className="date-input-pill selects-end">
         <span className="pill-label">Дата виїзду</span>
         <span className="pill-date">{formatDisplayDate(endDate, 'Оберіть')}</span>
-        <span className="pill-icon">📅</span>
+        
+        {/* 2. ЗАМІНИЛИ ЕМОДЗІ НА SVG-КОМПОНЕНТ */}
+        <span className="pill-icon"><FiCalendar /></span>
       </div>
     </button>
   );
@@ -64,6 +72,32 @@ const CustomDateButton = forwardRef(({ onClick, startDate, endDate }, ref) => {
 function BookingDatePicker({ dateRange, setDateRange, isMobile }) {
   const [startDate, endDate] = dateRange;
   const datePickerRef = useRef(null);
+
+  // --- НОВЕ: Стейт для максимальної дати (горизонту бронювання) ---
+  const [maxBookingDate, setMaxBookingDate] = useState(null);
+
+  // --- НОВЕ: Запитуємо бекенд, до якого числа відкрито сезон ---
+ // --- Запитуємо бекенд, до якого числа відкрито сезон ---
+  useEffect(() => {
+    const fetchBookingHorizon = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/settings');
+        if (response.ok) {
+          const data = await response.json();
+          // Встановлюємо реальну дату з бази даних
+          setMaxBookingDate(new Date(data.maxBookingDate));
+        }
+      } catch (error) {
+        console.error("Не вдалося завантажити горизонт бронювання", error);
+        // Якщо сервер лежить, даємо дефолт +3 місяці
+        const fallbackDate = new Date();
+        fallbackDate.setMonth(fallbackDate.getMonth() + 3);
+        setMaxBookingDate(fallbackDate);
+      }
+    };
+
+    fetchBookingHorizon();
+  }, []);
 
   const handleCloseCalendar = () => {
     if (datePickerRef.current) {
@@ -89,7 +123,8 @@ function BookingDatePicker({ dateRange, setDateRange, isMobile }) {
         startDate={startDate}
         endDate={endDate}
         onChange={(update) => setDateRange(update)}
-        minDate={new Date()}
+        minDate={new Date()} // Не можна вибрати вчора
+        maxDate={maxBookingDate} // НОВЕ: Не можна вибрати пізніше, ніж дозволив адмін
         locale="uk"
         shouldCloseOnSelect={!isMobile} 
         monthsShown={isMobile ? 6 : 2} 
@@ -109,7 +144,8 @@ function BookingDatePicker({ dateRange, setDateRange, isMobile }) {
                 className="calendar-nav-btn" 
                 style={{ visibility: customHeaderCount === 1 ? 'hidden' : 'visible' }}
               >
-                {"<"}
+                {/* 3. ЗАМІНИЛИ ТЕКСТ "<" НА SVG-КОМПОНЕНТ */}
+                <FiChevronLeft /> 
               </button>
             )}
             <span className="calendar-month-name">
@@ -122,7 +158,8 @@ function BookingDatePicker({ dateRange, setDateRange, isMobile }) {
                 className="calendar-nav-btn" 
                 style={{ visibility: customHeaderCount === 0 ? 'hidden' : 'visible' }}
               >
-                {">"}
+                {/* 3. ЗАМІНИЛИ ТЕКСТ ">" НА SVG-КОМПОНЕНТ */}
+                <FiChevronRight />
               </button>
             )}
           </div>
@@ -168,6 +205,8 @@ function BookingDatePicker({ dateRange, setDateRange, isMobile }) {
       </button>
     </>
   );
+  
 }
+
 
 export default BookingDatePicker;

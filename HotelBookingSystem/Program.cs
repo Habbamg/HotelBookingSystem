@@ -17,6 +17,7 @@ builder.WebHost.UseUrls("http://*:5000");
 // 2. Додаємо сервіси
 builder.Services.AddControllers().AddJsonOptions(x =>
    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
 builder.Services.AddEndpointsApiExplorer();
 
 // 3. CORS (Дозволяємо React заходити з будь-якого порту, щоб точно запрацювало)
@@ -24,7 +25,6 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        //policy.WithOrigins("http://localhost:5173")
         policy.AllowAnyOrigin()
               .AllowAnyMethod()
               .AllowAnyHeader();
@@ -66,20 +66,21 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 // ==========================================
-// 6. ЗАПУСК
+// 6. ЗАПУСК (ВЖИВАЄМО ПРАВИЛЬНИЙ ПОРЯДОК)
 // ==========================================
 app.UseSwagger();
-app.UseSwaggerUI(); // Swagger буде доступний завжди
+app.UseSwaggerUI();
 
-// app.UseHttpsRedirection(); // ВІДКЛЮЧАЄМО, щоб не було проблем з сертифікатами
+// 1. Спочатку маршрутизація
+app.UseRouting();
 
-app.UseCors("AllowAll"); // Вмикаємо дозвіл для всіх
+// 2. ПОТІМ CORS (назва має точно співпадати з політикою вище)
+app.UseCors("AllowAll");
 
+// 3. А вже потім авторизація і контролери
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
-
-

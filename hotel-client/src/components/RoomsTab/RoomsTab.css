@@ -1,0 +1,303 @@
+/* ================= АДМІНСЬКА ТАБЛИЦЯ НОМЕРІВ ================= */
+/* ================= НОВА СІТКА КАРТОК (GRID) ================= */
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 10px;
+}
+
+.room-card-ui {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  border: 1px solid #eaeaea;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.room-card-ui:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.room-card-image {
+  height: 200px;
+  background-color: #f0f0f0;
+  position: relative;
+}
+
+.room-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.no-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #aaa;
+  gap: 10px;
+}
+
+.room-status-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.room-status-badge.active { background-color: #1b4332; color: white; }
+.room-status-badge.hidden { background-color: #e03131; color: white; }
+
+.room-card-info {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.room-card-title {
+  margin: 0 0 15px 0;
+  font-size: 1.25rem;
+  color: #222;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.room-card-specs {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.spec-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.spec-item svg { color: #1b4332; }
+
+.room-card-price {
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px dashed #eaeaea;
+}
+
+.room-card-price .amount { font-size: 1.4rem; font-weight: 700; color: #1b4332; }
+.room-card-price .period { font-size: 0.9rem; color: #888; }
+
+.room-card-actions {
+  display: flex;
+  border-top: 1px solid #eaeaea;
+  background-color: #fafafa;
+}
+
+.btn-card-edit, .btn-card-delete {
+  flex: 1;
+  padding: 14px;
+  background: transparent;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.btn-card-edit { color: #1b4332; border-right: 1px solid #eaeaea; }
+.btn-card-edit:hover { background-color: #f2f8f5; }
+
+.btn-card-delete { color: #e03131; }
+.btn-card-delete:hover { background-color: #fff5f5; }
+
+.room-name-cell { display: flex; align-items: center; gap: 12px; font-weight: 600; color: #222; }
+.admin-room-thumb { width: 50px; height: 40px; object-fit: cover; border-radius: 4px; }
+.price-cell { font-weight: 700; color: #333; }
+
+.status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+.status-badge.available { background-color: #e8f5e9; color: #2c5e3b; }
+.status-badge.booked { background-color: #fff3e0; color: #e65100; }
+
+.actions-cell { display: flex; gap: 10px; }
+.actions-cell button { background: transparent; border: none; font-size: 1.1rem; cursor: pointer; padding: 8px; border-radius: 4px; transition: all 0.2s; }
+.btn-action-edit { color: #5c7cfa; }
+.btn-action-edit:hover { background-color: #edf2ff; }
+.btn-action-delete { color: #e03131; }
+.btn-action-delete:hover { background-color: #fff5f5; }
+
+.admin-loading-placeholder { display: flex; justify-content: center; align-items: center; height: 300px; color: #888; font-size: 1.1rem; }
+
+/* ================= МОДАЛЬНЕ ВІКНО ТА ВІЗАРД ================= */
+.modal-overlay { 
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+  background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; 
+  align-items: center; z-index: 2000; backdrop-filter: blur(3px); 
+}
+
+.modal-content { 
+  background: white; width: 100%; border-radius: 12px; 
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); max-height: 90vh; overflow-y: auto; 
+}
+
+.large-wizard-modal { width: 750px; max-width: 95vw; }
+
+.wizard-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0; border-bottom: 1px solid #e0e0e0; background-color: #fcfcfc;
+  position: sticky; top: 0; z-index: 10;
+}
+
+.wizard-steps { display: flex; align-items: center; flex-grow: 1; padding: 0 20px; }
+
+.wizard-step {
+  display: flex; align-items: center; gap: 8px; padding: 20px 10px;
+  font-weight: 600; color: #888; cursor: pointer;
+  border-bottom: 3px solid transparent; transition: all 0.2s;
+}
+
+.wizard-step:hover { color: #555; }
+.wizard-step.active { color: #1b4332; border-bottom: 3px solid #1b4332; }
+
+.step-icon { font-size: 1.1rem; }
+.step-divider { width: 40px; height: 1px; background-color: #ddd; margin: 0 15px; }
+
+.close-modal-btn { background: none; border: none; font-size: 1.5rem; color: #666; cursor: pointer; padding: 20px; }
+
+.wizard-body { padding: 25px; min-height: 350px; }
+.animation-fade-in { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.wizard-footer {
+  display: flex; justify-content: space-between; padding: 15px 25px;
+  background-color: #f9f9f9; border-top: 1px solid #e0e0e0;
+  position: sticky; bottom: 0; z-index: 10;
+}
+
+/* ================= ПОЛЯ ВВОДУ ================= */
+.form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+.form-group { display: flex; flex-direction: column; flex: 1; margin-bottom: 15px; }
+.form-group label { font-size: 0.9rem; font-weight: 600; color: #333; margin-bottom: 6px; }
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group textarea {
+  padding: 10px 12px; border: 1px solid #ccc; border-radius: 4px;
+  font-size: 1rem; font-family: inherit; width: 100%; box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none; border-color: #1b4332; box-shadow: 0 0 0 3px rgba(27, 67, 50, 0.15);
+}
+
+.checkbox-group { flex-direction: row; align-items: center; }
+.checkbox-group label { display: flex; align-items: center; gap: 8px; font-weight: 500; cursor: pointer; margin: 0; }
+.checkbox-group input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+
+/* ================= СІТКА ЗРУЧНОСТЕЙ ================= */
+.create-amenity-block { background-color: #fdfdfd; border: 1px dashed #bbb; border-radius: 6px; padding: 15px; margin-bottom: 20px; }
+.create-amenity-block h5 { margin: 0 0 10px 0; color: #555; font-size: 0.95rem; }
+.create-amenity-inputs { display: flex; gap: 10px; align-items: flex-end; }
+.create-amenity-inputs input { padding: 8px 10px; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
+.create-amenity-inputs button { padding: 9px 15px; background-color: #1b4332; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; white-space: nowrap; transition: 0.2s; }
+.create-amenity-inputs button:hover { background-color: #112a20; }
+
+.amenities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+.amenity-card {
+  display: flex; align-items: center; gap: 12px; padding: 12px 15px;
+  border: 1px solid #e0e0e0; border-radius: 6px; cursor: pointer;
+  transition: all 0.2s; background-color: #fff;
+}
+.amenity-card:hover { border-color: #1b4332; box-shadow: 0 2px 5px rgba(27, 67, 50, 0.1); }
+.amenity-card.selected { border-color: #1b4332; background-color: #f2f8f5; }
+
+.amenity-checkbox {
+  width: 20px; height: 20px; border: 2px solid #ccc; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center; color: white; transition: 0.2s;
+}
+.amenity-card.selected .amenity-checkbox { background-color: #1b4332; border-color: #1b4332; }
+.amenity-icon { font-size: 1.2rem; color: #555; }
+.amenity-card.selected .amenity-icon { color: #1b4332; }
+
+.btn-add-image-field {
+  background: none; border: 1px dashed #ccc; color: #666; width: 100%;
+  padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;
+}
+.btn-add-image-field:hover { border-color: #1b4332; color: #1b4332; background-color: #f9f9f9; }
+
+/* ================= ФІРМОВІ КНОПКИ ================= */
+.btn-add-item, .btn-submit {
+  padding: 10px 20px; background-color: #1b4332; color: white; border: none;
+  border-radius: 4px; font-size: 1rem; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 8px; transition: background-color 0.2s ease;
+}
+.btn-add-item:hover, .btn-submit:hover { background-color: #112a20; }
+.btn-submit:disabled { background-color: #999; cursor: not-allowed; }
+
+.btn-cancel {
+  padding: 10px 20px; background-color: transparent; border: 1px solid #888;
+  color: #555; border-radius: 4px; font-size: 1rem; font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+}
+.btn-cancel:hover { background-color: #f0f0f0; color: #333; border-color: #555; }
+/* --- СТИЛІ ДЛЯ ПРЕВ'Ю ЗРУЧНОСТЕЙ НА КАРТЦІ --- */
+.room-card-amenities-preview {
+  display: flex;
+  flex-wrap: wrap; /* Якщо не вміщаються в один рядок, переносяться нижче */
+  gap: 6px;
+  margin-bottom: 15px;
+  margin-top: -5px; /* Трохи притискаємо до характеристик */
+}
+
+.amenity-preview-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #f4f7f6; /* Світлий нейтральний фон */
+  border: 1px solid #e0e0e0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #444;
+  font-weight: 500;
+}
+
+/* Наша фірмова зелена іконка */
+.amenity-preview-badge i {
+  color: #1b4332; 
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Бейджик "+3", якщо зручностей більше ніж 4 */
+.amenity-more-count {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 700;
+  background-color: #eaeaea;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+}

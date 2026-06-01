@@ -19,5 +19,6 @@ namespace HotelBookingAPI.Entities
         // [JsonIgnore] потрібен, щоб не було замкненого кола при завантаженні
         [JsonIgnore]
         public Room? Room { get; set; }
+        public bool IsMain { get; set; }
     }
 }
