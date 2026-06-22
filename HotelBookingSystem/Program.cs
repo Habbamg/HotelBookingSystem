@@ -1,4 +1,4 @@
-﻿using HotelBookingAPI.Data;
+using HotelBookingAPI.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -48,6 +48,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = false,
             ValidateAudience = false
         };
+        // Додаємо CORS заголовки навіть до 401 відповідей
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = context =>
+            {
+                context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+                context.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddSwaggerGen(options =>
@@ -73,13 +84,13 @@ app.UseDeveloperExceptionPage();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// 1. Спочатку маршрутизація
+// 1. Маршрутизація (ПЕРШОЮ)
 app.UseRouting();
 
-// 2. ПОТІМ CORS
+// 2. CORS (після UseRouting, але ДО UseAuthentication — так вимагає документація Microsoft)
 app.UseCors("AllowAll");
 
-// 3. А вже потім авторизація і контролери
+// 3. Авторизація і контролери
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
