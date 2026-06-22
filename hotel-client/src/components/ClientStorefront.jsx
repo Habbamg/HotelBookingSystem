@@ -40,7 +40,7 @@ function ClientStorefront() {
 
       // Робимо запит на твій оновлений C# метод
       const response = await fetch(
-        `https://andriyputiyk-001-site1.htempurl.comapi/room/search?checkIn=${checkInStr}&checkOut=${checkOutStr}&adults=${adults}`
+        `https://andriyputiyk-001-site1.htempurl.com/api/room/search?checkIn=${checkInStr}&checkOut=${checkOutStr}&adults=${adults}`
       );
 
       if (response.ok) {

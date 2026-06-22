@@ -36,7 +36,7 @@ function Home() {
 
   const fetchFeaturedRooms = async () => {
     try {
-      const response = await fetch('https://andriyputiyk-001-site1.htempurl.comapi/Room');
+      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/Room');
       if (response.ok) {
         const data = await response.json();
         const topRooms = data.filter(r => r.isActive).slice(0, 3);
@@ -52,7 +52,7 @@ function Home() {
   // 🔥 ЗАВАНТАЖЕННЯ СПРАВЖНІХ ВІДГУКІВ З БАЗИ 🔥
   const fetchReviews = async () => {
     try {
-      const response = await fetch('https://andriyputiyk-001-site1.htempurl.comapi/Review');
+      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/Review');
       if (response.ok) {
         const data = await response.json();
         setReviews(data);
@@ -78,7 +78,7 @@ function Home() {
     e.preventDefault();
     setIsSubmittingReview(true);
     try {
-      const response = await fetch('https://andriyputiyk-001-site1.htempurl.comapi/Review', {
+      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/Review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newReview)

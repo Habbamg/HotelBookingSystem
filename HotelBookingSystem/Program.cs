@@ -62,12 +62,13 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
+
 var app = builder.Build();
 
 // ==========================================
 // 6. ЗАПУСК (ПРАВИЛЬНИЙ ПОРЯДОК)
 // ==========================================
-
+app.UseDeveloperExceptionPage();
 // Swagger працюватиме завжди
 app.UseSwagger();
 app.UseSwaggerUI();

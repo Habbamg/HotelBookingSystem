@@ -6,7 +6,7 @@ const SettingsTab = () => {
 
   useEffect(() => {
     // Завантажуємо поточні налаштування при відкритті вкладки
-    fetch('https://andriyputiyk-001-site1.htempurl.comapi/settings')
+    fetch('https://andriyputiyk-001-site1.htempurl.com/api/settings')
       .then(res => res.json())
       .then(data => {
         // Конвертуємо дату з бази (2026-08-30T00:00:00) у формат для інпута (YYYY-MM-DD)
@@ -22,7 +22,7 @@ const SettingsTab = () => {
     
     setIsSaving(true);
     try {
-      const response = await fetch('https://andriyputiyk-001-site1.htempurl.comapi/settings', {
+      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/settings', {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',

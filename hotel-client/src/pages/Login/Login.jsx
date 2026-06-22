@@ -24,7 +24,7 @@ function Login() {
     setError('');
 
     try {
-      const response = await fetch('https://andriyputiyk-001-site1.htempurl.comapi/Auth/login', {
+      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials)
