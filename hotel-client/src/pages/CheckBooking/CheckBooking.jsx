@@ -24,7 +24,7 @@ const CheckBooking = () => {
     setIsLoading(true);
     try {
       // Звертаємося до твого методу CheckBookingStatus
-      const response = await fetch(`https://andriyputiyk-001-site1.htempurl.com/api/Booking/check-status?phone=${encodeURIComponent(phone.trim())}&bookingCode=${encodeURIComponent(bookingCode.trim())}`);
+      const response = await fetch(`https://andriyputiyk-001-site1.htempurl.comapi/Booking/check-status?phone=${encodeURIComponent(phone.trim())}&bookingCode=${encodeURIComponent(bookingCode.trim())}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -50,7 +50,7 @@ const CheckBooking = () => {
 
     try {
       // Звертаємося до твого методу CancelBooking
-      const response = await fetch(`https://andriyputiyk-001-site1.htempurl.com/api/Booking/cancel?bookingCode=${encodeURIComponent(booking.bookingCode)}`, {
+      const response = await fetch(`https://andriyputiyk-001-site1.htempurl.comapi/Booking/cancel?bookingCode=${encodeURIComponent(booking.bookingCode)}`, {
         method: 'POST'
       });
 
