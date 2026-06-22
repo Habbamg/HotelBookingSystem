@@ -51,7 +51,7 @@ function Checkout() {
 
     const fetchRoomDetails = async () => {
       try {
-        const response = await fetch(`https://andriyputiyk-001-site1.htempurl.com/api/Room/${roomId}`);
+        const response = await fetch(`/api/Room/${roomId}`);
         if (response.ok) {
           const data = await response.json();
           setRoom(data);
@@ -89,7 +89,7 @@ function Checkout() {
     };
 
     try {
-      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/Booking', {
+      const response = await fetch('/api/Booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bookingPayload)

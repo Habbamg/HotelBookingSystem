@@ -12,7 +12,7 @@ function ReviewsTab() {
   const fetchReviews = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/Review/all', {
+      const response = await fetch('/api/Review/all', {
         headers: { 'Authorization': `Bearer ${token}` } // Додаємо токен адміна!
       });
       if (response.ok) {
@@ -29,7 +29,7 @@ function ReviewsTab() {
   const handleApprove = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://andriyputiyk-001-site1.htempurl.com/api/Review/${id}/approve`, {
+      const response = await fetch(`/api/Review/${id}/approve`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -45,7 +45,7 @@ function ReviewsTab() {
     if (!window.confirm('Ви впевнені, що хочете видалити цей відгук назавжди?')) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://andriyputiyk-001-site1.htempurl.com/api/Review/${id}`, {
+      const response = await fetch(`/api/Review/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

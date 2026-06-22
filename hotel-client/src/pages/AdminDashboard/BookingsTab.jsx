@@ -14,7 +14,7 @@ const BookingsTab = () => {
 
   const fetchBookings = async () => {
     try {
-      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/Booking/all', {
+      const response = await fetch('/api/Booking/all', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.ok) {
@@ -31,7 +31,7 @@ const BookingsTab = () => {
   const handleStatusChange = async (id, newStatus) => {
     try {
       // ПЕРЕДАЄМО СТАТУС В URL: ?newStatus=...
-      const response = await fetch(`https://andriyputiyk-001-site1.htempurl.com/api/Booking/${id}/status?newStatus=${newStatus}`, {
+      const response = await fetch(`/api/Booking/${id}/status?newStatus=${newStatus}`, {
         method: 'PUT',
         headers: { 
           'Authorization': `Bearer ${localStorage.getItem('token')}`
