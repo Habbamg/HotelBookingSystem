@@ -139,10 +139,10 @@ function Booking() {
     const fetchRooms = async () => {
       try {
         setLoading(true);
-        let url = 'https://andriyputiyk-001-site1.htempurl.com/api/Room'; 
+        let url = 'https://andriyputiyk-001-site1.htempurl.com//api/Room'; 
 
         if (urlStart && urlEnd) {
-          url = `https://andriyputiyk-001-site1.htempurl.com/api/Room/search?checkIn=${urlStart}&checkOut=${urlEnd}&adults=${urlAdults}&children=${urlChildren}`;
+          url = `https://andriyputiyk-001-site1.htempurl.com//api/Room/search?checkIn=${urlStart}&checkOut=${urlEnd}&adults=${urlAdults}&children=${urlChildren}`;
         }
 
         const response = await fetch(url);

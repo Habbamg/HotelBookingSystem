@@ -81,7 +81,7 @@ function BookingDatePicker({ dateRange, setDateRange, isMobile }) {
   useEffect(() => {
     const fetchBookingHorizon = async () => {
       try {
-        const response = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/settings');
+        const response = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/settings');
         if (response.ok) {
           const data = await response.json();
           // Встановлюємо реальну дату з бази даних
