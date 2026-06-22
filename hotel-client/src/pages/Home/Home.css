@@ -146,3 +146,99 @@
     margin-top: 0.5rem; 
   }
 }
+/* --- СТИЛІ ДЛЯ БЛОКУ "МОЗАЇКА" (Bento Grid) --- */
+.categories-bento-section {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.bento-title {
+  text-align: center;
+  color: #1b4332;
+  font-size: 2.2rem;
+  margin-bottom: 5px;
+}
+
+.bento-subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 40px;
+  font-size: 1.1rem;
+}
+
+/* Сама сітка */
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Дві колонки */
+  grid-template-rows: 250px 250px; /* Два ряди по 250px висотою */
+  gap: 20px;
+}
+
+/* Налаштування блоків */
+.bento-item {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bento-item:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+}
+
+/* Лівий блок займає два ряди у висоту */
+.bento-large {
+  grid-row: 1 / 3; 
+}
+
+/* Зображення всередині блоків */
+.bento-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.bento-item:hover .bento-img {
+  transform: scale(1.05); /* Легкий зум фото при наведенні */
+}
+
+/* Темний градієнт знизу, щоб текст добре читався */
+.bento-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+  padding: 30px 20px 20px;
+  color: white;
+  pointer-events: none;
+}
+
+.bento-overlay h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+.bento-overlay p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #e0e0e0;
+}
+
+/* --- Адаптація для телефонів --- */
+@media (max-width: 768px) {
+  .bento-grid {
+    grid-template-columns: 1fr; /* На телефоні все стає в одну колонку */
+    grid-template-rows: 300px 250px 250px;
+  }
+  
+  .bento-large {
+    grid-row: auto; /* Відміняємо висоту на 2 ряди для телефону */
+  }
+}

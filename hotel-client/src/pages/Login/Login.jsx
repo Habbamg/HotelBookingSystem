@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
@@ -6,6 +6,14 @@ function Login() {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // 🔥 ОХОРОНЕЦЬ 1: Якщо токен вже є, миттєво кидаємо в адмінку і затираємо історію
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token && token !== '' && token !== 'undefined') {
+      navigate('/admin-dashboard', { replace: true });
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -16,21 +24,17 @@ function Login() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/Auth/login', {
+      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials)
       });
       
       if (response.ok) {
-        // Твій бекенд повертає просто текст (стрічку токена), тому читаємо як .text()
         const token = await response.text();
-        
-        // Ховаємо токен у локальне сховище браузера
         localStorage.setItem('token', token); 
-        
-        // Переходимо в адмінку
-        navigate('/admin-dashboard');
+        // 🔥 Перехід в адмінку із затиранням сторінки логіну з історії браузера
+        navigate('/admin-dashboard', { replace: true });
       } else {
         const errorText = await response.text();
         setError(errorText || 'Неправильний логін або пароль');

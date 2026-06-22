@@ -11,6 +11,10 @@ const AvailabilityCalendar = () => {
   const [rooms, setRooms] = useState([]);
   const [availabilities, setAvailabilities] = useState([]); 
   const [occupancyRules, setOccupancyRules] = useState([]); 
+  
+  // 🔥 НОВИЙ СТЕЙТ ДЛЯ РЕАЛЬНИХ БРОНЮВАНЬ
+  const [realBookings, setRealBookings] = useState([]); 
+  
   const [loading, setLoading] = useState(true);
 
   // Стейт для фільтрації номерів
@@ -45,14 +49,12 @@ const AvailabilityCalendar = () => {
 
   const dates = Array.from({ length: daysToShow }).map((_, i) => addDays(startDate || new Date(), i));
 
-  // --- РОБОЧА НАВІГАЦІЯ СТРІЛОЧКАМИ ---
   const handlePrevWeek = () => {
     setDateRange(prev => {
       const [start, end] = prev;
       let newStart = addDays(start, -7);
       let newEnd = addDays(end, -7);
 
-      // Не даємо гортати в минуле (до сьогодні)
       if (newStart < today) {
         const daysToShift = differenceInDays(today, newStart);
         newStart = today;
@@ -73,18 +75,24 @@ const AvailabilityCalendar = () => {
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      const roomsRes = await fetch('http://localhost:5000/api/Room'); 
+      const roomsRes = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Room'); 
       if (roomsRes.ok) setRooms(await roomsRes.json());
 
       if (startDate && endDate) {
         const startStr = format(startDate, 'yyyy-MM-dd');
         const endStr = format(endDate, 'yyyy-MM-dd');
-        const availRes = await fetch(`http://localhost:5000/api/Availability?start=${startStr}&end=${endStr}`);
+        const availRes = await fetch(`https://andriyputiyk-001-site1.htempurl.com//api/Availability?start=${startStr}&end=${endStr}`);
         if (availRes.ok) setAvailabilities(await availRes.json());
       }
 
-      const rulesRes = await fetch('http://localhost:5000/api/Availability/occupancy-rules');
+      const rulesRes = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Availability/occupancy-rules');
       if (rulesRes.ok) setOccupancyRules(await rulesRes.json());
+
+      // 🔥 НОВЕ: Завантажуємо реальні бронювання
+      const bookingsRes = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Booking/all', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (bookingsRes.ok) setRealBookings(await bookingsRes.json());
 
     } catch (error) {
       console.error("Помилка завантаження даних:", error);
@@ -97,7 +105,7 @@ const AvailabilityCalendar = () => {
     fetchAllData();
   }, [startDate, endDate]);
 
-  // --- ЛОГІКА ВІДОБРАЖЕННЯ (ФІЛЬТРАЦІЯ) ---
+  // --- ЛОГІКА ВІДОБРАЖЕННЯ ---
   const getAvailabilityForDate = (roomId, date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
     return availabilities.find(a => a.roomId === roomId && a.date.substring(0, 10) === dateStr);
@@ -110,6 +118,25 @@ const AvailabilityCalendar = () => {
   const getDiscountForRoom = (roomId, targetGuestCount) => {
     const rule = occupancyRules.find(r => r.roomId === roomId && r.guestCount === targetGuestCount);
     return rule ? rule.discountAmount : 0;
+  };
+
+  // 🔥 НОВА ФУНКЦІЯ: Перевіряємо, чи дата перекривається реальним бронюванням
+  const getBookingForDate = (roomId, date) => {
+    const checkDate = new Date(date);
+    checkDate.setHours(0, 0, 0, 0);
+
+    return realBookings.find(b => {
+      // Ігноруємо скасовані та для інших номерів
+      if (b.roomId !== roomId || b.status === 'Cancelled') return false;
+
+      const checkIn = new Date(b.checkInDate);
+      checkIn.setHours(0, 0, 0, 0);
+      const checkOut = new Date(b.checkOutDate);
+      checkOut.setHours(0, 0, 0, 0);
+
+      // Гість займає номер з дня заїзду до дня ПЕРЕД виїздом (ночі)
+      return checkDate >= checkIn && checkDate < checkOut;
+    });
   };
 
   // --- ОБРОБНИКИ КНОПОК ---
@@ -127,7 +154,7 @@ const AvailabilityCalendar = () => {
         status: editForm.status, minStay: editForm.minStay ? parseInt(editForm.minStay) : null
       };
 
-      const response = await fetch('http://localhost:5000/api/Availability/bulk-update', {
+      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Availability/bulk-update', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
       });
 
@@ -138,7 +165,6 @@ const AvailabilityCalendar = () => {
     } catch (error) { alert("Помилка з'єднання з сервером."); }
   };
 
-  // Відкриття модалки тарифу
   const handleOpenRateModal = (e, room) => {
     e.stopPropagation();
     setRateModal(room);
@@ -154,7 +180,6 @@ const AvailabilityCalendar = () => {
     setDiscountInputs(initialDiscounts);
   };
 
-  // Збереження тарифних правил
   const handleSaveRateRule = async () => {
     if (!rateModal) return;
     
@@ -163,16 +188,10 @@ const AvailabilityCalendar = () => {
         const guestCount = parseInt(guestCountStr);
         const discountVal = parseFloat(discountInputs[guestCount]) || 0;
 
-        const payload = {
-          roomId: rateModal.id,
-          guestCount: guestCount,
-          discount: discountVal
-        };
-
-        return fetch('http://localhost:5000/api/Availability/occupancy-rule', {
+        return fetch('https://andriyputiyk-001-site1.htempurl.com//api/Availability/occupancy-rule', {
           method: 'POST', 
           headers: { 'Content-Type': 'application/json' }, 
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ roomId: rateModal.id, guestCount: guestCount, discount: discountVal })
         });
       });
 
@@ -185,34 +204,23 @@ const AvailabilityCalendar = () => {
     }
   };
 
-  // Зміна базової місткості номера
   const handleChangeBaseCapacity = async () => {
     if (!rateModal) return;
     
     const newCapacity = window.prompt("Введіть нову стандартну місткість для цього номера:", rateModal.maxCapacity || 2);
     
     if (newCapacity !== null && newCapacity.trim() !== "") {
-      const capacityValue = parseInt(newCapacity);
-
       try {
-        const response = await fetch('http://localhost:5000/api/Room/update-capacity', {
+        const response = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Room/update-capacity', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            roomId: rateModal.id, 
-            maxCapacity: capacityValue 
-          })
+          body: JSON.stringify({ roomId: rateModal.id, maxCapacity: parseInt(newCapacity) })
         });
-
         if (response.ok) {
           setRateModal(null); 
           fetchAllData();     
-        } else {
-          alert("Помилка при оновленні місткості.");
         }
-      } catch (error) {
-        alert("Помилка з'єднання з сервером.");
-      }
+      } catch (error) {}
     }
   };
 
@@ -221,8 +229,6 @@ const AvailabilityCalendar = () => {
   return (
     <div className="calendar-tab-container">
       <div className="calendar-controls">
-        
-        {/* --- РОБОЧИЙ ФІЛЬТР --- */}
         <div className="control-group">
           <select 
             className="extranet-select"
@@ -271,7 +277,6 @@ const AvailabilityCalendar = () => {
           </thead>
           <tbody>
             
-            {/* --- ЗАСТОСУВАННЯ ФІЛЬТРА ДО СПИСКУ НОМЕРІВ --- */}
             {rooms
               .filter(room => selectedRoomId === 'all' || room.id.toString() === selectedRoomId)
               .map(room => {
@@ -298,16 +303,36 @@ const AvailabilityCalendar = () => {
                   <td className="sticky-col row-label">Статус номера</td>
                   {dates.map((date, idx) => {
                     const isOpen = isRoomOpen(room.id, date);
+                    const booking = getBookingForDate(room.id, date); // Перевіряємо бронювання
+
+                    // Визначаємо стиль і текст в залежності від статусу
+                    let statusClass = 'open';
+                    let statusText = 'Відкрито';
+                    let bgStyle = {};
+
+                    if (booking) {
+                      statusClass = 'booked';
+                      statusText = 'Зайнято';
+                      bgStyle = { backgroundColor: '#e63946', color: 'white' }; // Червоний колір для зайнятого
+                    } else if (!isOpen) {
+                      statusClass = 'closed';
+                      statusText = 'Закрито';
+                    }
+
                     return (
                       <td key={idx} className="status-cell">
-                        <div className={`status-bar ${isOpen ? 'open' : 'closed'}`}>
-                          {isOpen ? 'Відкрито' : 'Закрито'}
+                        {/* Якщо є бронь, при наведенні покаже ім'я гостя */}
+                        <div 
+                          className={`status-bar ${statusClass}`} 
+                          title={booking ? `Бронь: ${booking.guestName} (${booking.bookingCode})` : ''}
+                          style={bgStyle}
+                        >
+                          {statusText}
                         </div>
                       </td>
                     );
                   })}
                 </tr>
-
 
                 <tr className="price-row">
                   <td className="sticky-col row-label">
@@ -324,17 +349,21 @@ const AvailabilityCalendar = () => {
                   </td>
                   {dates.map((date, idx) => {
                     const isOpen = isRoomOpen(room.id, date);
+                    const booking = getBookingForDate(room.id, date);
                     const currentPrice = getRoomPrice(room, date);
+                    
+                    // Відключаємо клітинку, якщо вона закрита АБО якщо там вже є бронь
+                    const isDisabled = !isOpen || !!booking;
+
                     return (
-                      <td key={idx} className={`data-cell price-data ${!isOpen ? 'disabled-cell' : ''}`}>
-                        {isOpen && <span className="currency">UAH</span>}
-                        <span className="amount">{isOpen ? currentPrice : ''}</span>
+                      <td key={idx} className={`data-cell price-data ${isDisabled ? 'disabled-cell' : ''}`}>
+                        {!isDisabled && <span className="currency">UAH</span>}
+                        <span className="amount">{!isDisabled ? currentPrice : (booking ? 'Бронь' : '')}</span>
                       </td>
                     );
                   })}
                 </tr>
                 
-                {/* ПІД-РЯДКИ */}
                 {expandedRates[room.id] && Array.from({ length: maxCap - 1 }).map((_, loopIdx) => {
                   const guestCount = maxCap - 1 - loopIdx; 
                   
@@ -348,13 +377,16 @@ const AvailabilityCalendar = () => {
                       </td>
                       {dates.map((date, idx) => {
                         const isOpen = isRoomOpen(room.id, date);
+                        const booking = getBookingForDate(room.id, date);
                         const currentPrice = getRoomPrice(room, date);
                         const discount = getDiscountForRoom(room.id, guestCount);
                         const subPrice = currentPrice - discount; 
                         
+                        const isDisabled = !isOpen || !!booking;
+
                         return (
-                          <td key={idx} className={`data-cell sub-price-data ${!isOpen ? 'disabled-cell' : ''}`} style={{ backgroundColor: '#f7f7f7', color: '#555' }}>
-                            {isOpen && subPrice > 0 ? subPrice : ''}
+                          <td key={idx} className={`data-cell sub-price-data ${isDisabled ? 'disabled-cell' : ''}`} style={{ backgroundColor: '#f7f7f7', color: '#555' }}>
+                            {!isDisabled && subPrice > 0 ? subPrice : ''}
                           </td>
                         );
                       })}
@@ -366,10 +398,14 @@ const AvailabilityCalendar = () => {
                   <td className="sticky-col row-label restriction-label">Мін. термін перебування</td>
                   {dates.map((date, idx) => {
                     const isOpen = isRoomOpen(room.id, date);
+                    const booking = getBookingForDate(room.id, date);
                     const minStay = getRoomMinStay(room, date);
+                    
+                    const isDisabled = !isOpen || !!booking;
+
                     return (
-                      <td key={idx} className={`data-cell ${!isOpen ? 'disabled-cell' : ''}`}>
-                        {isOpen ? minStay : ''}
+                      <td key={idx} className={`data-cell ${isDisabled ? 'disabled-cell' : ''}`}>
+                        {!isDisabled ? minStay : ''}
                       </td>
                     );
                   })}

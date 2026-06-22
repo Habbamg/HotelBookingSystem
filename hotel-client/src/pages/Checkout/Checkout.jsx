@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { format, parseISO, differenceInDays } from 'date-fns';
 import { uk } from 'date-fns/locale/uk';
-import { FiUsers, FiCheck, FiCalendar, FiShield } from 'react-icons/fi';
+import { FiUsers, FiCheck, FiCalendar, FiShield, FiCopy, FiCheckCircle } from 'react-icons/fi';
 
 import RoomDetailsModal from '../../components/RoomDetailsModal/RoomDetailsModal';
 import './Checkout.css';
@@ -32,6 +32,11 @@ function Checkout() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // 🔥 СТЕЙТИ ДЛЯ МОДАЛКИ З КОДОМ 🔥
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [generatedCode, setGeneratedCode] = useState('');
 
   const nights = (startStr && endStr) ? differenceInDays(parseISO(endStr), parseISO(startStr)) : 1;
   const formattedStart = startStr ? format(parseISO(startStr), 'dd MMMM', { locale: uk }) : '';
@@ -46,7 +51,7 @@ function Checkout() {
 
     const fetchRoomDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/Room/${roomId}`);
+        const response = await fetch(`https://andriyputiyk-001-site1.htempurl.com//api/Room/${roomId}`);
         if (response.ok) {
           const data = await response.json();
           setRoom(data);
@@ -69,6 +74,7 @@ function Checkout() {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
+    setErrorMessage('');
 
     const bookingPayload = {
       roomId: parseInt(roomId),
@@ -83,23 +89,34 @@ function Checkout() {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/api/Booking', {
+      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bookingPayload)
       });
 
       if (response.ok) {
-        setSubmitStatus('success');
-        setTimeout(() => navigate('/'), 4000);
+        const data = await response.json();
+        // Замість редиректу зберігаємо код і відкриваємо модалку
+        setGeneratedCode(data.bookingCode);
+        setIsSuccessModalOpen(true);
       } else {
+        const errorText = await response.text();
         setSubmitStatus('error');
+        setErrorMessage(errorText || 'Сталася помилка при бронюванні.');
       }
     } catch (error) {
       setSubmitStatus('error');
+      setErrorMessage("Немає зв'язку з сервером. Спробуйте пізніше.");
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Функція для копіювання коду
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generatedCode);
+    alert('Код скопійовано в буфер обміну!');
   };
 
   if (loading) return <div className="checkout-loading">Завантаження деталей...</div>;
@@ -113,19 +130,6 @@ function Checkout() {
         "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80"
       ];
   const displayImages = images.slice(0, 5);
-
-  if (submitStatus === 'success') {
-    return (
-      <div className="checkout-success-page">
-        <div className="success-card">
-          <div className="success-icon-circle"><FiCheck /></div>
-          <h2>Бронювання підтверджено!</h2>
-          <p>Дякуємо, <strong>{formData.guestName}</strong>. Ваша заявка успішно оформлена.</p>
-          <p className="success-subtext">Ми зв'яжемося з вами найближчим часом для уточнення деталей.</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="checkout-pro-page">
@@ -169,7 +173,11 @@ function Checkout() {
                 </div>
               </form>
 
-              {submitStatus === 'error' && <div className="pro-error">Виникла помилка під час відправки. Спробуйте ще раз.</div>}
+              {submitStatus === 'error' && (
+                <div className="pro-error" style={{ color: '#e63946', backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px', marginTop: '15px' }}>
+                  {errorMessage}
+                </div>
+              )}
             </div>
 
             <div className="pro-trust-badges">
@@ -185,8 +193,6 @@ function Checkout() {
 
           {/* ПРАВА КОЛОНКА: Деталі замовлення */}
           <div className="checkout-right">
-            
-            {/* 1. РОБИМО ВСЮ КАРТКУ КЛІКАБЕЛЬНОЮ */}
             <div 
               className="pro-summary-card"
               style={{ cursor: 'pointer' }}
@@ -253,7 +259,6 @@ function Checkout() {
                   <span className="total-amount">{room.basePrice * nights} ₴</span>
                 </div>
 
-                {/* 2. ЗУПИНЯЄМО КЛІК НА КНОПЦІ, ЩОБ ВОНА ВІДПРАВЛЯЛА ФОРМУ, А НЕ ВІДКРИВАЛА МОДАЛКУ */}
                 <button 
                   form="booking-form" 
                   type="submit" 
@@ -276,6 +281,57 @@ function Checkout() {
         onClose={() => setIsModalOpen(false)} 
         onBook={() => setIsModalOpen(false)} 
       />
+
+      {/* 🔥 МОДАЛЬНЕ ВІКНО З КОДОМ (З'ЯВЛЯЄТЬСЯ ТІЛЬКИ ПІСЛЯ УСПІШНОГО БРОНЮВАННЯ) 🔥 */}
+      {isSuccessModalOpen && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, padding: '20px'
+        }}>
+          <div style={{
+            backgroundColor: '#fff', borderRadius: '16px', padding: '40px', maxWidth: '500px', width: '100%',
+            textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
+          }}>
+            
+            <FiCheckCircle style={{ fontSize: '5rem', color: '#1b4332', marginBottom: '20px' }} />
+            
+            <h2 style={{ color: '#2c3e50', margin: '0 0 15px 0' }}>Бронювання підтверджено!</h2>
+            
+            <p style={{ color: '#555', fontSize: '1.1rem', marginBottom: '25px', lineHeight: '1.5' }}>
+              Дякуємо, {formData.guestName}! Ваш номер успішно заброньовано. Ми зв'яжемося з вами найближчим часом.
+            </p>
+
+            <div style={{ backgroundColor: '#f0f4f8', border: '2px dashed #1b4332', borderRadius: '12px', padding: '20px', marginBottom: '25px', position: 'relative' }}>
+              <span style={{ display: 'block', color: '#666', fontSize: '0.9rem', marginBottom: '10px' }}>
+                Ваш секретний код бронювання:
+              </span>
+              <strong style={{ fontSize: '2.5rem', color: '#1b4332', letterSpacing: '2px' }}>
+                {generatedCode}
+              </strong>
+              
+              <button 
+                onClick={copyToClipboard}
+                style={{ position: 'absolute', top: '10px', right: '10px', background: 'none', border: 'none', color: '#0071c2', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+                title="Скопіювати код"
+              >
+                <FiCopy size={20} />
+              </button>
+            </div>
+
+            <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '30px' }}>
+              ⚠️ Збережіть цей код. З його допомогою ви зможете перевірити статус або скасувати бронь на сторінці <strong>"Моє бронювання"</strong>.
+            </p>
+
+            <button 
+              onClick={() => navigate('/')} 
+              style={{ backgroundColor: '#ffc107', color: '#1b4332', padding: '14px 30px', fontSize: '1.1rem', fontWeight: 'bold', border: 'none', borderRadius: '8px', cursor: 'pointer', width: '100%', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}
+            >
+              Зрозуміло, на головну
+            </button>
+            
+          </div>
+        </div>
+      )}
 
     </div>
   );

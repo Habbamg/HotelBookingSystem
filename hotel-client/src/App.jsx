@@ -7,7 +7,9 @@ import Booking from "./pages/Booking/Booking";
 import Checkout from "./pages/Checkout/Checkout";
 import Login from './pages/Login/Login';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard'; 
+import CheckBooking from './pages/CheckBooking/CheckBooking';
 import './App.css'; 
+import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 
 // Імпортуємо наш логотип для клієнтської шапки
 import logo from './assets/logo.png'; 
@@ -21,7 +23,7 @@ function ClientLayout({ isMenuOpen, setIsMenuOpen, closeMenu }) {
       {/* --- ШАПКА --- */}
       <header className="header">
         
-        {/* ЗАМІНИЛИ ТЕКСТ НА ЛОГОТИП */}
+        {/* ЛОГОТИП */}
         <Link to="/" className="logo" onClick={closeMenu}>
           <img src={logo} alt="Гостинний двір Буковець" className="public-navbar-logo" />
         </Link>
@@ -35,6 +37,7 @@ function ClientLayout({ isMenuOpen, setIsMenuOpen, closeMenu }) {
         <nav className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           <Link to="/" onClick={closeMenu}>Головна</Link>
           <Link to="/booking" onClick={closeMenu}>Номери</Link>
+          <Link to="/my-booking" onClick={closeMenu}>Моє бронювання</Link>
           <a href="#contacts" onClick={closeMenu}>Контакти</a>
           
           {/* Кнопка для персоналу */}
@@ -78,6 +81,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/booking" element={<Booking />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/my-booking" element={<CheckBooking />} />
         </Route>
 
         {/* === ЗОНА АДМІНІСТРАТОРА === */}
@@ -85,6 +89,10 @@ function App() {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         
       </Routes>
+
+      {/* 🔥 Кнопка наверх для всього сайту знаходиться тут! 🔥 */}
+      <ScrollToTop />
+
     </Router>
   );
 }

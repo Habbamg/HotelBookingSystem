@@ -33,10 +33,10 @@ namespace HotelBookingAPI.Controllers
             return Ok(rooms); // Повертаємо статус 200 OK і список
         }
 
-        // 🔥 НОВИЙ МЕТОД 🔥
+        // 🔥 ВИПРАВЛЕНО: Додано :int, щоб не плутати з "search" 🔥
         // GET: api/room/{id}
         // Цей метод віддає інформацію про ОДИН конкретний номер (для сторінки оформлення)
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<Room>> GetRoomById(int id)
         {
             var room = await _context.Rooms
@@ -68,7 +68,7 @@ namespace HotelBookingAPI.Controllers
         // 3. POST: api/room/{id}/media
         // Окремий метод, щоб додати фото або відео до існуючої кімнати
         [Authorize(Roles = "Admin")]
-        [HttpPost("{id}/media")]
+        [HttpPost("{id:int}/media")]
         public async Task<ActionResult<RoomImage>> AddRoomMedia(int id, [FromBody] RoomImage media)
         {
             // 1. Перевіряємо, чи існує така кімната
@@ -93,8 +93,7 @@ namespace HotelBookingAPI.Controllers
 
         // 4. GET: api/room/search
         // Найважливіший метод: Пошук вільних номерів
-        [HttpGet("search")]
-        // GET: api/room/search
+        // 🔥 ВИПРАВЛЕНО: Залишено тільки один атрибут [HttpGet("search")] 🔥
         [HttpGet("search")]
         public async Task<ActionResult<List<Room>>> SearchRooms(
             DateTime checkIn,
@@ -137,7 +136,7 @@ namespace HotelBookingAPI.Controllers
         // 5. POST: api/room/{roomId}/amenity/{amenityId}
         // Метод, щоб додати зручність до кімнати
         [Authorize(Roles = "Admin")]
-        [HttpPost("{roomId}/amenity/{amenityId}")]
+        [HttpPost("{roomId:int}/amenity/{amenityId:int}")]
         public async Task<ActionResult> AddAmenityToRoom(int roomId, int amenityId)
         {
             // 1. Шукаємо кімнату (обов'язково вантажимо існуючі зручності через Include!)
@@ -167,10 +166,11 @@ namespace HotelBookingAPI.Controllers
 
             return Ok(new { message = $"Зручність '{amenity.Name}' успішно додано до кімнати '{room.Name}'" });
         }
+
         // 6. PUT: api/room/{id}
         // Метод для повного оновлення текстових і числових характеристик номера
         [Authorize(Roles = "Admin")]
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateRoom(int id, [FromBody] Room updatedRoom)
         {
             // Знаходимо існуючий номер у базі
@@ -196,10 +196,11 @@ namespace HotelBookingAPI.Controllers
 
             return Ok(room);
         }
+
         // 7. DELETE: api/room/{roomId}/amenity/{amenityId}
         // Метод для видалення зручності з конкретного номера
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{roomId}/amenity/{amenityId}")]
+        [HttpDelete("{roomId:int}/amenity/{amenityId:int}")]
         public async Task<ActionResult> RemoveAmenityFromRoom(int roomId, int amenityId)
         {
             // Завантажуємо кімнату разом із її поточними зручностями
@@ -222,11 +223,11 @@ namespace HotelBookingAPI.Controllers
 
             return Ok(new { message = $"Зручність успішно видалено з номера '{room.Name}'" });
         }
-        // DELETE: api/room/{id}
+
+        // 8. DELETE: api/room/{id}
         // Метод для видалення номера
-        // DELETE: api/room/{id}
         [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteRoom(int id)
         {
             // Шукаємо кімнату разом із її фотографіями та зручностями
@@ -252,10 +253,11 @@ namespace HotelBookingAPI.Controllers
 
             return Ok(new { message = "Номер успішно видалено" });
         }
-        // PUT: api/room/{id}/sync-images
+
+        // 9. PUT: api/room/{id}/sync-images
         // Метод для оновлення списку фотографій
         [Authorize(Roles = "Admin")]
-        [HttpPut("{id}/sync-images")]
+        [HttpPut("{id:int}/sync-images")]
         public async Task<IActionResult> SyncRoomImages(int id, [FromBody] List<string> imageUrls)
         {
             var room = await _context.Rooms
@@ -285,6 +287,5 @@ namespace HotelBookingAPI.Controllers
             await _context.SaveChangesAsync();
             return Ok(new { message = "Фотографії успішно оновлено" });
         }
-
     }
 }

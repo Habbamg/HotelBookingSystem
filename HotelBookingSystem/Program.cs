@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // ==========================================
 // 1. ЖОРСТКА ПРИВ'ЯЗКА ДО ПОРТУ 5000 🔒
 // ==========================================
-builder.WebHost.UseUrls("http://*:5000");
+//builder.WebHost.UseUrls("http://*:5000");
 
 // 2. Додаємо сервіси
 builder.Services.AddControllers().AddJsonOptions(x =>

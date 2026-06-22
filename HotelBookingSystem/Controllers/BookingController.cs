@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using HotelBookingAPI.Data;
 using HotelBookingAPI.Entities;
-using Microsoft.AspNetCore.Authorization; // 👈 Не забудь додати це для захисту!
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelBookingAPI.Controllers
 {
@@ -45,7 +45,7 @@ namespace HotelBookingAPI.Controllers
 
             booking.TotalPrice = price * days;
 
-            // 4. Генерація коду (Цей код піде на "email")
+            // 4. Генерація коду
             booking.BookingCode = Guid.NewGuid().ToString().Substring(0, 4).ToUpper();
             booking.CreatedAt = DateTime.Now;
             booking.Status = "Confirmed";
@@ -57,29 +57,23 @@ namespace HotelBookingAPI.Controllers
         }
 
         // 2. 🔐 ПЕРЕВІРКА БРОНЮВАННЯ (Тільки Телефон + Код)
-        // Гість має знати обидва параметри, щоб побачити деталі
         [HttpGet("check-status")]
         public async Task<ActionResult<Booking>> CheckBookingStatus(string phone, string bookingCode)
         {
             var booking = await _context.Bookings
                 .Include(b => b.Room)
                 .Include(b => b.Room.Images)
-                // 👇 Шукаємо, де співпадає І телефон, І код
                 .FirstOrDefaultAsync(b => b.GuestPhone == phone && b.BookingCode == bookingCode);
 
             if (booking == null)
             {
-                // Спеціально не кажемо, що саме неправильно (для безпеки)
                 return NotFound("Бронювання не знайдено. Перевірте номер телефону та код.");
             }
 
             return Ok(booking);
         }
 
-        // 3. 👮‍♂️ СКАСУВАННЯ (Тільки Адмін)
-        // Ми залишили пошук за кодом, бо це зручно, але додали ЗАМОК
-
-        //[Authorize(Roles = "Admin")] // потрібно буде розкоментувати щоб ролі працювали
+        // 3. 👮‍♂️ СКАСУВАННЯ
         [HttpPost("cancel")]
         public async Task<ActionResult> CancelBooking(string bookingCode)
         {
@@ -92,8 +86,7 @@ namespace HotelBookingAPI.Controllers
             return Ok(new { message = $"Бронювання {bookingCode} успішно скасовано." });
         }
 
-        // 4. Адмінський метод: Подивитися ВCІ бронювання (Тільки Адмін)
-        // Це знадобиться тобі для Адмін-панелі
+        // 4. Подивитися ВCІ бронювання (Тільки Адмін)
         [Authorize(Roles = "Admin")]
         [HttpGet("all")]
         public async Task<ActionResult<List<Booking>>> GetAllBookings()
@@ -104,6 +97,20 @@ namespace HotelBookingAPI.Controllers
                 .ToListAsync();
 
             return Ok(bookings);
+        }
+
+        // 5. Зміна статусу бронювання (ВИПРАВЛЕНО: без FromBody)
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id:int}/status")]
+        public async Task<IActionResult> UpdateBookingStatus(int id, string newStatus)
+        {
+            var booking = await _context.Bookings.FindAsync(id);
+            if (booking == null) return NotFound("Бронювання не знайдено");
+
+            booking.Status = newStatus;
+            await _context.SaveChangesAsync();
+
+            return Ok(booking);
         }
     }
 }

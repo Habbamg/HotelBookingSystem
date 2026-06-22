@@ -29,7 +29,7 @@ const RoomsTab = () => {
   const fetchRooms = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/Room'); 
+      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Room'); 
       if (response.ok) setRooms(await response.json());
     } catch (error) { console.error("Помилка завантаження номерів:", error); }
     finally { setLoading(false); }
@@ -37,7 +37,7 @@ const RoomsTab = () => {
 
   const fetchAmenities = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/Amenity'); 
+      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Amenity'); 
       if (response.ok) setDbAmenities(await response.json());
     } catch (error) { console.error("Помилка завантаження зручностей:", error); }
   };
@@ -62,7 +62,7 @@ const RoomsTab = () => {
     if (!newAmenityForm.name.trim()) return;
     try {
       setIsCreatingAmenity(true);
-      const response = await fetch('http://localhost:5000/api/Amenity', {
+      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Amenity', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}`},
         body: JSON.stringify({ name: newAmenityForm.name, iconClass: newAmenityForm.iconClass || 'bi-gear' })
@@ -116,7 +116,7 @@ const RoomsTab = () => {
   const handleDeleteRoom = async (id, name) => {
     if (window.confirm(`Ви дійсно хочете видалити номер "${name}"? Це дія незворотна.`)) {
       try {
-        const response = await fetch(`http://localhost:5000/api/Room/${id}`, {
+        const response = await fetch(`https://andriyputiyk-001-site1.htempurl.com//api/Room/${id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
@@ -146,7 +146,7 @@ const RoomsTab = () => {
 
       if (editingRoomId) {
         // Оновлюємо існуючий
-        const res = await fetch(`http://localhost:5000/api/Room/${editingRoomId}`, {
+        const res = await fetch(`https://andriyputiyk-001-site1.htempurl.com//api/Room/${editingRoomId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           body: JSON.stringify(roomToSave)
@@ -154,7 +154,7 @@ const RoomsTab = () => {
         if (!res.ok) throw new Error("Помилка оновлення");
       } else {
         // Створюємо новий
-        const res = await fetch('http://localhost:5000/api/Room', {
+        const res = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Room', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           body: JSON.stringify(roomToSave)
@@ -172,14 +172,14 @@ const RoomsTab = () => {
       const amenitiesToRemove = originalAmenities.filter(id => !selectedAmenities.includes(id));
 
       for (const amenityId of amenitiesToAdd) {
-        await fetch(`http://localhost:5000/api/Room/${roomId}/amenity/${amenityId}`, {
+        await fetch(`https://andriyputiyk-001-site1.htempurl.com//api/Room/${roomId}/amenity/${amenityId}`, {
           method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
       }
 
       if (editingRoomId) {
         for (const amenityId of amenitiesToRemove) {
-          await fetch(`http://localhost:5000/api/Room/${roomId}/amenity/${amenityId}`, {
+          await fetch(`https://andriyputiyk-001-site1.htempurl.com//api/Room/${roomId}/amenity/${amenityId}`, {
             method: 'DELETE', headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
           });
         }
@@ -191,7 +191,7 @@ const RoomsTab = () => {
       
       if (editingRoomId) {
         // Якщо це РЕДАГУВАННЯ - використовуємо наш новий метод синхронізації
-        await fetch(`http://localhost:5000/api/Room/${roomId}/sync-images`, {
+        await fetch(`https://andriyputiyk-001-site1.htempurl.com//api/Room/${roomId}/sync-images`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           body: JSON.stringify(validImages)
@@ -199,7 +199,7 @@ const RoomsTab = () => {
       } else {
         // Якщо це СТВОРЕННЯ нового номера - додаємо фото по одному
         for (const url of validImages) {
-          await fetch(`http://localhost:5000/api/Room/${roomId}/media`, {
+          await fetch(`https://andriyputiyk-001-site1.htempurl.com//api/Room/${roomId}/media`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
             body: JSON.stringify({ url: url, type: "image", isMain: true }) 
