@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link, Outlet } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, Outlet } from 'react-router-dom';
 import { useState } from 'react';
 
 // Імпорти сторінок
@@ -37,7 +37,7 @@ function ClientLayout({ isMenuOpen, setIsMenuOpen, closeMenu }) {
         <nav className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
           <Link to="/" onClick={closeMenu}>Головна</Link>
           <Link to="/booking" onClick={closeMenu}>Номери</Link>
-          <Link to="/my-booking" onClick={closeMenu}>Моє бронювання</Link>
+          <Link to="/my-booking" onClick={closeMenu}>Mom бронювання</Link>
           <a href="#contacts" onClick={closeMenu}>Контакти</a>
           
           {/* Кнопка для персоналу */}
