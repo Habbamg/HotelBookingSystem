@@ -10,17 +10,16 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // ==========================================
-// 1. ЖОРСТКА ПРИВ'ЯЗКА ДО ПОРТУ 5000 🔒
+// 1. ЖОРСТКА ПРИВ'ЯЗКА ДО ПОРТУ (ВИМКНЕНО)
 // ==========================================
-//builder.WebHost.UseUrls("http://*:5000");
+// builder.WebHost.UseUrls("http://*:5000");
 
 // 2. Додаємо сервіси
 builder.Services.AddControllers().AddJsonOptions(x =>
    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-
 builder.Services.AddEndpointsApiExplorer();
 
-// 3. CORS (Дозволяємо React заходити з будь-якого порту, щоб точно запрацювало)
+// 3. CORS (Дозволяємо React заходити з будь-якого сайту - ідеально для диплому)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -31,10 +30,10 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 4. База даних
+// 4. База даних (Беремо підключення з appsettings.json!)
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=HotelDiplomDb;Trusted_Connection=true;TrustServerCertificate=true;");
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 // 5. Авторизація і Swagger
@@ -66,21 +65,22 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 // ==========================================
-// 6. ЗАПУСК (ВЖИВАЄМО ПРАВИЛЬНИЙ ПОРЯДОК)
+// 6. ЗАПУСК (ПРАВИЛЬНИЙ ПОРЯДОК)
 // ==========================================
+
+// Swagger працюватиме завжди
 app.UseSwagger();
 app.UseSwaggerUI();
 
 // 1. Спочатку маршрутизація
 app.UseRouting();
 
-// 2. ПОТІМ CORS (назва має точно співпадати з політикою вище)
+// 2. ПОТІМ CORS
 app.UseCors("AllowAll");
 
 // 3. А вже потім авторизація і контролери
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
