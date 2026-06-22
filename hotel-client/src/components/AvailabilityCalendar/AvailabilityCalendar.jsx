@@ -75,21 +75,21 @@ const AvailabilityCalendar = () => {
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      const roomsRes = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Room'); 
+      const roomsRes = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/Room'); 
       if (roomsRes.ok) setRooms(await roomsRes.json());
 
       if (startDate && endDate) {
         const startStr = format(startDate, 'yyyy-MM-dd');
         const endStr = format(endDate, 'yyyy-MM-dd');
-        const availRes = await fetch(`https://andriyputiyk-001-site1.htempurl.com//api/Availability?start=${startStr}&end=${endStr}`);
+        const availRes = await fetch(`https://andriyputiyk-001-site1.htempurl.com/api/Availability?start=${startStr}&end=${endStr}`);
         if (availRes.ok) setAvailabilities(await availRes.json());
       }
 
-      const rulesRes = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Availability/occupancy-rules');
+      const rulesRes = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/Availability/occupancy-rules');
       if (rulesRes.ok) setOccupancyRules(await rulesRes.json());
 
       // 🔥 НОВЕ: Завантажуємо реальні бронювання
-      const bookingsRes = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Booking/all', {
+      const bookingsRes = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/Booking/all', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (bookingsRes.ok) setRealBookings(await bookingsRes.json());
@@ -154,7 +154,7 @@ const AvailabilityCalendar = () => {
         status: editForm.status, minStay: editForm.minStay ? parseInt(editForm.minStay) : null
       };
 
-      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Availability/bulk-update', {
+      const response = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/Availability/bulk-update', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
       });
 
@@ -188,7 +188,7 @@ const AvailabilityCalendar = () => {
         const guestCount = parseInt(guestCountStr);
         const discountVal = parseFloat(discountInputs[guestCount]) || 0;
 
-        return fetch('https://andriyputiyk-001-site1.htempurl.com//api/Availability/occupancy-rule', {
+        return fetch('https://andriyputiyk-001-site1.htempurl.com/api/Availability/occupancy-rule', {
           method: 'POST', 
           headers: { 'Content-Type': 'application/json' }, 
           body: JSON.stringify({ roomId: rateModal.id, guestCount: guestCount, discount: discountVal })
@@ -211,7 +211,7 @@ const AvailabilityCalendar = () => {
     
     if (newCapacity !== null && newCapacity.trim() !== "") {
       try {
-        const response = await fetch('https://andriyputiyk-001-site1.htempurl.com//api/Room/update-capacity', {
+        const response = await fetch('https://andriyputiyk-001-site1.htempurl.com/api/Room/update-capacity', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ roomId: rateModal.id, maxCapacity: parseInt(newCapacity) })
